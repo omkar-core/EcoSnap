@@ -1,0 +1,133 @@
+<div class="h-screen w-screen bg-slate-950 flex flex-col overflow-hidden relative">
+  
+  <!-- GPS Error Toast -->
+  @if (game.locationError()) {
+    <div class="absolute top-0 left-0 right-0 z-[100] flex justify-center pt-4 pointer-events-none">
+      <div class="bg-amber-900/95 backdrop-blur-md border border-amber-500/50 text-amber-50 px-4 py-3 rounded-lg shadow-2xl flex items-start gap-3 pointer-events-auto animate-slide-down max-w-sm w-[90%]">
+        <div class="text-xl">⚠️</div>
+        <div class="flex-1 text-sm">
+          <p class="font-bold mb-0.5">Location Access Limited</p>
+          <p class="opacity-90 leading-tight mb-2">{{ game.locationError() }}</p>
+          <button (click)="game.retryLocation()" class="text-xs bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded border border-amber-600/50 transition-colors font-semibold">
+             Retry GPS
+          </button>
+        </div>
+        <button (click)="game.dismissLocationError()" class="text-amber-300 hover:text-white transition-colors p-1 -mt-1 -mr-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- System Notification Toast (Success/Error) -->
+  @if (game.systemMessage(); as msg) {
+    <div class="absolute top-16 left-0 right-0 z-[100] flex justify-center pt-4 pointer-events-none">
+      <div class="backdrop-blur-md border px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 pointer-events-auto animate-slide-down max-w-sm w-[90%]"
+           [class.bg-emerald-900_95]="msg.type === 'success'"
+           [class.border-emerald-500_50]="msg.type === 'success'"
+           [class.text-emerald-50]="msg.type === 'success'"
+           [class.bg-red-900_95]="msg.type === 'error'"
+           [class.border-red-500_50]="msg.type === 'error'"
+           [class.text-red-50]="msg.type === 'error'"
+           [class.bg-slate-800_95]="msg.type === 'info'"
+           [class.border-slate-600_50]="msg.type === 'info'"
+           [class.text-slate-100]="msg.type === 'info'">
+        <div class="text-xl">
+           @if (msg.type === 'success') { ✅ }
+           @else if (msg.type === 'error') { 🛑 }
+           @else { ℹ️ }
+        </div>
+        <div class="flex-1 text-sm font-medium">
+          {{ msg.text }}
+        </div>
+        <button (click)="game.dismissToast()" class="opacity-70 hover:opacity-100 transition-opacity p-1">
+           ✖
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Main Content Area -->
+  <main class="flex-1 overflow-hidden relative">
+    @if (currentView() === 'landing') {
+      <app-landing-view (finish)="navTo('dashboard')" class="h-full w-full block"></app-landing-view>
+    }
+    @else if (currentView() === 'dashboard') {
+      <app-dashboard-view 
+         class="h-full w-full block" 
+         (viewScan)="openHistoryItem($event)">
+      </app-dashboard-view>
+    } 
+    @else if (currentView() === 'camera') {
+      <app-camera-view (imageCaptured)="handleImageCapture($event)" (close)="navTo('dashboard')" class="h-full w-full block"></app-camera-view>
+    }
+    @else if (currentView() === 'team') {
+      <app-team-view class="h-full w-full block"></app-team-view>
+    }
+  </main>
+
+  <!-- Navigation Bar -->
+  @if (!isProcessing() && !scanResult() && currentView() !== 'landing') {
+    <nav class="h-20 bg-slate-900 border-t border-slate-800 flex justify-around items-center px-6 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+      
+      <!-- Home Button -->
+      <button (click)="navTo('dashboard')" 
+              [class.text-emerald-400]="currentView() === 'dashboard'"
+              [class.text-slate-500]="currentView() !== 'dashboard'"
+              class="flex flex-col items-center gap-1 transition-colors p-2 active:scale-95 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="text-xs font-medium">Home</span>
+      </button>
+
+      <!-- FAB for Hunt -->
+      <button (click)="navTo('camera')" 
+              class="relative -top-8 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/40 border-4 border-slate-950 text-white transform transition hover:scale-105 active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </button>
+
+      <!-- Team Button (Now Active) -->
+      <button (click)="navTo('team')"
+              [class.text-emerald-400]="currentView() === 'team'"
+              [class.text-slate-500]="currentView() !== 'team'"
+              class="flex flex-col items-center gap-1 transition-colors p-2 active:scale-95 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <span class="text-xs font-medium">Team</span>
+      </button>
+    </nav>
+  }
+
+  <!-- Loading Overlay -->
+  @if (isProcessing()) {
+    <div class="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center">
+       <div class="relative w-24 h-24 mb-6">
+         <div class="absolute inset-0 border-4 border-slate-800 rounded-full"></div>
+         <div class="absolute inset-0 border-4 border-t-emerald-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+       </div>
+       <div class="text-emerald-400 font-mono animate-pulse">Analyzing Artifact...</div>
+       <div class="text-slate-500 text-xs mt-2 max-w-xs text-center">Gemini 3 is identifying composition & recyclability</div>
+    </div>
+  }
+
+  <!-- Result Modal (Used for New Scans AND History View) -->
+  @if (scanResult() && capturedImage()) {
+    <app-scan-result 
+      [result]="scanResult()!" 
+      [imageSrc]="capturedImage()!"
+      [isHistory]="isHistoryView()"
+      [upcycleClaimed]="currentUpcycleClaimed()" 
+      (onClaim)="claimPoints($event)"
+      (claimUpcycle)="handleUpcycleClaim()"
+      (close)="closeModal()">
+    </app-scan-result>
+  }
+
+</div>

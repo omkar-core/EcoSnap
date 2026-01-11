@@ -1,0 +1,9 @@
+{
+  "name": "EcoSnap",
+  "description": "An AI-powered urban ecology game. Scan waste, earn points, and heal your neighborhood.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
