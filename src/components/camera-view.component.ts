@@ -44,9 +44,9 @@ interface PassiveItem {
            <h3 class="text-white font-bold text-2xl mb-3 tracking-tight">Camera Unavailable</h3>
            <p class="text-slate-400 text-center max-w-xs mb-8 leading-relaxed text-sm">
              @if (permissionDenied()) {
-                Access was denied. Please check your browser settings or try uploading a photo instead.
+                Camera access was blocked. Please check your browser's address bar or settings to allow camera permissions, then refresh the page.
              } @else {
-                We couldn't access the camera stream. You can still analyze waste by uploading a photo.
+                We couldn't access the camera. Please ensure no other apps are using it and try again.
              }
            </p>
 
@@ -71,19 +71,21 @@ interface PassiveItem {
         
         <!-- Mode Switcher (Top Left) -->
         @if (!passiveSessionActive() && !showPassiveSummary()) {
-          <div class="absolute top-6 left-6 z-40 bg-slate-900/80 backdrop-blur rounded-full p-1 border border-slate-700 flex">
+          <div class="absolute top-6 left-6 z-40 bg-black/40 backdrop-blur-md rounded-full p-1.5 border border-white/10 flex shadow-lg">
              <button (click)="setMode('active')" 
-                     class="px-3 py-1.5 rounded-full text-xs font-bold uppercase transition-all"
-                     [class.bg-emerald-500]="mode() === 'active'"
-                     [class.text-white]="mode() === 'active'"
-                     [class.text-slate-400]="mode() === 'active'">
+                     class="px-4 py-2 rounded-full text-xs font-bold uppercase transition-all duration-300"
+                     [class.bg-white]="mode() === 'active'"
+                     [class.text-black]="mode() === 'active'"
+                     [class.text-white]="mode() !== 'active'"
+                     [class.hover:bg-white_10]="mode() !== 'active'">
                 Active
              </button>
              <button (click)="setMode('passive')" 
-                     class="px-3 py-1.5 rounded-full text-xs font-bold uppercase transition-all"
-                     [class.bg-indigo-500]="mode() === 'passive'"
-                     [class.text-white]="mode() === 'passive'"
-                     [class.text-slate-400]="mode() === 'active'">
+                     class="px-4 py-2 rounded-full text-xs font-bold uppercase transition-all duration-300"
+                     [class.bg-white]="mode() === 'passive'"
+                     [class.text-black]="mode() === 'passive'"
+                     [class.text-white]="mode() !== 'passive'"
+                     [class.hover:bg-white_10]="mode() !== 'passive'">
                 Auto Scan
              </button>
           </div>
@@ -123,21 +125,29 @@ interface PassiveItem {
           </div>
 
           <!-- Controls -->
-          <div class="absolute bottom-24 w-full flex justify-center items-center z-20 gap-8">
-            <button (click)="switchCamera()" class="p-3 bg-slate-800/60 backdrop-blur rounded-full text-white hover:bg-slate-700 transition">
+          <div class="absolute bottom-24 w-full flex justify-center items-center z-20 gap-10">
+            
+            <!-- Switch Camera -->
+            <button (click)="switchCamera()" class="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white/10 transition border border-white/10 shadow-lg active:scale-90">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </button>
 
-            <button (click)="capture()" class="relative group">
-              <div class="absolute inset-0 bg-emerald-500 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-300"></div>
-              <div class="w-20 h-20 bg-white rounded-full border-4 border-slate-900 flex items-center justify-center relative z-10 active:scale-95 transition transform">
-                <div class="w-16 h-16 bg-emerald-500 rounded-full"></div>
+            <!-- TACTILE SHUTTER BUTTON -->
+            <button (click)="capture()" class="relative group btn-particle">
+              <!-- Glow behind -->
+              <div class="absolute inset-0 bg-emerald-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+              
+              <!-- Outer Ring -->
+              <div class="w-24 h-24 rounded-full border-[6px] border-white/90 bg-transparent flex items-center justify-center relative z-10 shadow-[0_4px_10px_rgba(0,0,0,0.5)] transition-transform group-active:scale-95">
+                 <!-- Inner Button -->
+                 <div class="w-16 h-16 bg-white rounded-full shadow-inner group-hover:bg-emerald-50 transition-colors duration-200"></div>
               </div>
             </button>
 
-            <label class="p-3 bg-slate-800/60 backdrop-blur rounded-full text-white hover:bg-slate-700 transition cursor-pointer">
+            <!-- Gallery Import -->
+            <label class="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white/10 transition border border-white/10 shadow-lg cursor-pointer active:scale-90">
                <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)">
                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -159,7 +169,7 @@ interface PassiveItem {
                   <h2 class="text-2xl font-bold text-white">Scout Auto-Mode</h2>
                   <p class="text-indigo-200 text-sm">
                     AI will automatically detect waste while you move. 
-                    <br><span class="text-xs opacity-70">GPS Movement required to trigger scan.</span>
+                    <br><span class="text-xs opacity-70">Power-saving: Scans triggered by GPS movement every 10s.</span>
                   </p>
                   @if (game.locationError()) {
                      <p class="text-red-400 text-xs bg-red-900/20 p-2 rounded border border-red-500/20">
@@ -167,7 +177,7 @@ interface PassiveItem {
                      </p>
                   }
                   <button (click)="startPassiveSession()" 
-                          class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl w-full shadow-lg transition-transform active:scale-95"
+                          class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl w-full shadow-lg transition-transform active:scale-95 btn-shockwave"
                           [disabled]="!!game.locationError()"
                           [class.opacity-50]="!!game.locationError()">
                     START RUN
@@ -189,20 +199,20 @@ interface PassiveItem {
                   <div class="flex flex-col items-center">
                      <span class="text-xs text-indigo-300 font-bold uppercase">Status</span>
                      <span class="text-white font-mono text-sm animate-pulse">
-                        {{ isScanningBackground() ? 'ANALYZING...' : (hasMovedEnough() ? 'READY' : 'WAITING FOR MOVEMENT') }}
+                        {{ getPassiveStatusText() }}
                      </span>
                   </div>
                </div>
 
                <!-- Bottom Stop Button -->
                <div class="pointer-events-auto self-center mb-8">
-                  <button (click)="stopPassiveSession()" class="group relative flex items-center justify-center">
+                  <button (click)="stopPassiveSession()" class="group relative flex items-center justify-center btn-3d">
                      <div class="absolute inset-0 bg-red-500 rounded-full blur opacity-40 group-hover:opacity-60 transition"></div>
-                     <div class="w-20 h-20 bg-white rounded-full border-4 border-slate-900 flex items-center justify-center relative z-10">
-                        <div class="w-8 h-8 bg-red-500 rounded shadow-sm"></div>
+                     <div class="w-24 h-24 bg-white rounded-full border-[6px] border-slate-900 flex items-center justify-center relative z-10 shadow-2xl">
+                        <div class="w-10 h-10 bg-red-500 rounded-lg shadow-sm"></div>
                      </div>
                   </button>
-                  <div class="text-center text-red-400 text-xs font-bold mt-2 uppercase tracking-widest">Stop Run</div>
+                  <div class="text-center text-red-400 text-xs font-bold mt-4 uppercase tracking-widest bg-black/50 backdrop-blur px-3 py-1 rounded-full">Hold to Stop</div>
                </div>
             </div>
           }
@@ -238,10 +248,10 @@ interface PassiveItem {
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                   <button (click)="discardSession()" class="py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-900">
+                   <button (click)="discardSession()" class="py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-900 active:scale-95 transition-transform">
                       Discard
                    </button>
-                   <button (click)="claimSession()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 shadow-lg shadow-emerald-900/50">
+                   <button (click)="claimSession()" class="py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-500 shadow-lg shadow-emerald-900/50 btn-shockwave">
                       Claim {{ sessionTotalPoints() }} XP
                    </button>
                 </div>
@@ -254,12 +264,12 @@ interface PassiveItem {
   styles: [`
     @keyframes scan {
       0% { top: 0%; opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
       100% { top: 100%; opacity: 0; }
     }
     .animate-scan {
-      animation: scan 2s linear infinite;
+      animation: scan 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
     .text-shadow {
       text-shadow: 0 2px 4px rgba(0,0,0,0.8);
@@ -292,6 +302,7 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
   
   // Movement Logic
   private lastScanLocation: { lat: number, lng: number } | null = null;
+  private lastScanTime = 0;
   hasMovedEnough = signal(false); 
   
   private stream: MediaStream | null = null;
@@ -320,11 +331,12 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     this.passiveItems.set([]);
     this.lastScanLocation = null;
     this.hasMovedEnough.set(false);
+    this.lastScanTime = 0; // Reset timer
     
-    // Check loop every 2 seconds
+    // Check loop every 1 second for responsive status UI
     this.passiveIntervalId = setInterval(() => {
        this.checkPassiveTrigger();
-    }, 2000);
+    }, 1000);
   }
 
   stopPassiveSession() {
@@ -349,22 +361,38 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     this.setMode('active'); // Return to active mode
   }
 
+  getPassiveStatusText() {
+    if (this.isScanningBackground()) return 'ANALYZING...';
+    if (!this.game.userLocation()) return 'SEARCHING FOR GPS';
+    
+    const now = Date.now();
+    const timeLeft = Math.ceil((10000 - (now - this.lastScanTime)) / 1000);
+    
+    if (timeLeft > 0) return `COOLDOWN (${timeLeft}s)`;
+    
+    return this.hasMovedEnough() ? 'DETECTING...' : 'WAITING FOR MOVEMENT';
+  }
+
   private checkPassiveTrigger() {
     if (this.isScanningBackground()) return;
+
+    // Strict: 10s Cooldown
+    const now = Date.now();
+    if (now - this.lastScanTime < 10000) {
+       return; 
+    }
 
     // STRICT: Check Movement
     const currentLoc = this.game.userLocation();
     
-    // If no GPS, we cannot determine movement in production grade. 
-    // We do NOT fallback to time. We simply wait.
     if (!currentLoc) {
        this.hasMovedEnough.set(false);
        return;
     }
     
     if (!this.lastScanLocation) {
-       // First scan of the session is allowed immediately if we have GPS
-       this.hasMovedEnough.set(true);
+       // First scan of the session is allowed immediately (after cooldown check passed)
+       this.triggerBackgroundScan(currentLoc);
     } else {
        const dist = this.getDistanceFromLatLonInMeters(
           this.lastScanLocation.lat, this.lastScanLocation.lng,
@@ -372,15 +400,16 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
        );
        // Threshold: 10 meters
        this.hasMovedEnough.set(dist > 10);
-    }
 
-    if (this.hasMovedEnough()) {
-       this.triggerBackgroundScan(currentLoc);
+       if (dist > 10) {
+          this.triggerBackgroundScan(currentLoc);
+       }
     }
   }
 
   private async triggerBackgroundScan(location: {lat: number, lng: number} | null) {
      this.isScanningBackground.set(true);
+     this.lastScanTime = Date.now(); // Start cooldown immediately
      
      const imageBase64 = this.captureFrameSilent();
      if (!imageBase64) {

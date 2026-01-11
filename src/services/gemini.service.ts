@@ -94,7 +94,8 @@ export class GeminiService {
 
         4. **Action Plan**:
            - **Recycling**: Preparation steps (e.g., "Rinse and dry", "Flatten", "Wrap in newspaper").
-           - **Upcycling**: If the item is 'Safe' and 'Intact', provide a creative DIY idea suitable for an Indian home/garden using common household materials (e.g., "Turn PET bottle into self-watering planter", "Use glass jar for masala storage").
+           - **Upcycling**: If the item is 'Safe' and 'Intact', provide a creative DIY idea suitable for an Indian home/garden using common household materials.
+             * **REQUIREMENT**: You MUST provide a specific list of materials needed, step-by-step instructions, difficulty, and estimated time.
 
         5. **Anthropological Insight**:
            - **Urban Artifact Story**: A 1-sentence observation on the item's age/origin. (e.g., "This sun-bleached MLP wrapper likely dates back to last season, slowly fragmenting into the soil.").
@@ -103,7 +104,7 @@ export class GeminiService {
         - 'materialComposition': Use the specific terms listed above (e.g. "PET", "Multi-layered Plastic").
         - 'recyclingGuidance.category': Must strictly match one of the 4 bin categories above.
         - 'condition', 'riskLevel', 'biologicalCategory': Follow strict enums in schema.
-        - 'upcyclingRecipe': Provide ONLY if item is 'Intact' and risk is 'Low'.
+        - 'upcyclingRecipe': Provide ONLY if item is 'Intact' and risk is 'Low'. Populate all fields (materials, instructions, time, difficulty).
 
         Generate JSON response.
       `;
@@ -197,6 +198,22 @@ export class GeminiService {
     } catch (error) {
       console.error('Gemini Analysis Failed:', error);
       throw error;
+    }
+  }
+
+  async chat(message: string): Promise<string> {
+    try {
+      const response = await this.ai.models.generateContent({
+        model: this.modelId,
+        contents: `You are EcoScout, a helpful urban ecology assistant. 
+        Answer the user's question about recycling, waste management, or sustainability in a concise, encouraging, and factual way. 
+        Keep the tone gamified and professional. 
+        User Query: ${message}`
+      });
+      return response.text || "I'm having trouble connecting to the network. Try again later.";
+    } catch (error) {
+      console.error('Chat Error:', error);
+      return "I'm offline right now. Please check your connection.";
     }
   }
 }

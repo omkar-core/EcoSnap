@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, effect, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeminiService, WasteAnalysis } from './services/gemini.service';
 import { GameService, ClaimType, ScanRecord } from './services/game.service';
@@ -7,8 +7,16 @@ import { DashboardViewComponent } from './components/dashboard-view.component';
 import { ScanResultComponent } from './components/scan-result.component';
 import { TeamViewComponent } from './components/team-view.component';
 import { LandingViewComponent } from './components/landing-view.component';
+import { CommunityViewComponent } from './components/map-view.component'; // Importing from repurposed file
 
-type ViewState = 'dashboard' | 'camera' | 'team' | 'landing';
+type ViewState = 'dashboard' | 'camera' | 'team' | 'landing' | 'community';
+
+interface ChatMessage {
+  role: 'user' | 'ai';
+  text: string;
+  timestamp: Date;
+  isTyping?: boolean;
+}
 
 @Component({
   selector: 'app-root',
@@ -19,7 +27,8 @@ type ViewState = 'dashboard' | 'camera' | 'team' | 'landing';
     DashboardViewComponent, 
     ScanResultComponent, 
     TeamViewComponent,
-    LandingViewComponent
+    LandingViewComponent,
+    CommunityViewComponent
   ],
   templateUrl: './app.component.html',
   styles: [`
@@ -33,6 +42,13 @@ type ViewState = 'dashboard' | 'camera' | 'team' | 'landing';
       to { opacity: 0; }
     }
     .animate-fade-out { animation: fade-out 0.5s ease-out forwards; }
+    
+    /* Chat Animations */
+    @keyframes pop-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop-in { animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   `]
 })
 export class AppComponent {
@@ -49,7 +65,97 @@ export class AppComponent {
   currentHistoryId = signal<string | null>(null);
   currentUpcycleClaimed = signal(false);
 
+  // AI Copilot State
+  isAiOpen = signal(false);
+  chatHistory = signal<ChatMessage[]>([]);
+  isAiThinking = signal(false);
+  currentAiTypedText = signal('');
+
   private currentScanLocation: { lat: number, lng: number } | undefined;
+  private typeWriterTimeout: any;
+
+  constructor() {
+    // Initial Greeting from AI
+    if (this.game.hasOnboarded()) {
+      setTimeout(() => {
+        this.addAiMessage(`Welcome back, Ranger ${this.game.username()}. Systems online. How can I assist your patrol today?`);
+      }, 2000);
+    }
+  }
+
+  toggleAi() {
+    this.isAiOpen.update(v => !v);
+    // If opening and no history, trigger greeting
+    if (this.isAiOpen() && this.chatHistory().length === 0) {
+       this.isAiThinking.set(true);
+       setTimeout(() => {
+         this.isAiThinking.set(false);
+         this.addAiMessage(`EcoScout AI initialized. I can analyze waste trends, suggest patrol routes, or answer ecology questions.`);
+       }, 1000);
+    }
+  }
+
+  async sendToAi(message: string) {
+    if (!message.trim()) return;
+
+    // Add User Message
+    this.chatHistory.update(h => [...h, { role: 'user', text: message, timestamp: new Date() }]);
+    this.isAiThinking.set(true);
+
+    try {
+      // Simulate "Thinking" time for realism
+      await new Promise(resolve => setTimeout(resolve, 800)); // Minimum UI delay
+      
+      const response = await this.geminiService.chat(message);
+      this.isAiThinking.set(false);
+      this.addAiMessage(response);
+    } catch (e) {
+      this.isAiThinking.set(false);
+      this.addAiMessage("Connection interrupted. Please retry.");
+    }
+  }
+
+  private addAiMessage(fullText: string) {
+    const newMessage: ChatMessage = { role: 'ai', text: '', timestamp: new Date(), isTyping: true };
+    this.chatHistory.update(h => [...h, newMessage]);
+
+    this.typewriteResponse(fullText, this.chatHistory().length - 1);
+  }
+
+  private typewriteResponse(fullText: string, msgIndex: number) {
+    const words = fullText.split(' ');
+    let i = 0;
+    const speed = 40; // slightly slower for word by word
+
+    const type = () => {
+      if (i < words.length) {
+        // Update the specific message in history
+        this.chatHistory.update(history => {
+          const newHistory = [...history];
+          if (newHistory[msgIndex]) {
+             const chunk = (i > 0 ? ' ' : '') + words[i];
+             newHistory[msgIndex] = {
+               ...newHistory[msgIndex],
+               text: newHistory[msgIndex].text + chunk
+             };
+          }
+          return newHistory;
+        });
+        i++;
+        this.typeWriterTimeout = setTimeout(type, speed);
+      } else {
+        // Done typing
+        this.chatHistory.update(history => {
+           const newHistory = [...history];
+           if (newHistory[msgIndex]) {
+             newHistory[msgIndex].isTyping = false;
+           }
+           return newHistory;
+        });
+      }
+    };
+    type();
+  }
 
   async handleImageCapture(imageBase64: string) {
     this.capturedImage.set(imageBase64);

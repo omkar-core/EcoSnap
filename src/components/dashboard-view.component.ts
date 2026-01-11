@@ -1,8 +1,9 @@
-import { Component, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, output, signal, computed, ChangeDetectionStrategy, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as d3 from 'd3';
-import { GameService, ScanRecord, Zone, LeaderboardEntry } from '../services/game.service';
-import { ActivityType } from '../services/gemini.service';
+import { GameService, ScanRecord, Zone } from '../services/game.service';
+import { GeminiService } from '../services/gemini.service';
+import { AppComponent } from '../app.component'; 
 
 @Component({
   selector: 'app-dashboard-view',
@@ -10,321 +11,259 @@ import { ActivityType } from '../services/gemini.service';
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="h-full overflow-y-auto pb-24 bg-slate-950">
-      <!-- Header Stats -->
-      <div class="p-6 bg-gradient-to-b from-emerald-900/40 to-slate-950 border-b border-emerald-900/30">
-        <div class="flex justify-between items-start mb-6">
+    <div class="h-full overflow-y-auto pb-32 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 font-inter">
+      
+      <!-- Header -->
+      <div class="px-6 pt-8 pb-6 bg-gradient-to-b from-slate-900 to-transparent">
+        <div class="flex items-center justify-between mb-6">
           <div>
-            <!-- Editable Username -->
-            @if (isEditingName()) {
-               <div class="flex items-center gap-2 mb-1">
-                 <input #nameInput 
-                        type="text" 
-                        [value]="game.username()" 
-                        (keyup.enter)="saveName(nameInput.value)" 
-                        (blur)="saveName(nameInput.value)"
-                        class="bg-slate-800 text-white text-xl font-bold rounded px-2 py-1 w-40 focus:outline-none focus:ring-2 focus:ring-emerald-500 border border-slate-700"
-                        autofocus>
-                 <button (click)="saveName(nameInput.value)" class="text-emerald-400 p-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                 </button>
-               </div>
-            } @else {
-               <h1 (click)="startEditingName()" class="text-2xl font-bold text-white flex items-center gap-2 cursor-pointer group hover:text-emerald-300 transition-colors">
-                  Hello, {{ game.username() }}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-               </h1>
-            }
-
-            <!-- Accurate Location Display -->
-            <div class="mt-2">
-              <p class="text-emerald-400 text-xs flex items-center gap-1 font-bold mb-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {{ game.currentAddress() }}
-              </p>
-              
-              <!-- Location Fallback Warning -->
-              @if (game.isFallbackLocation()) {
-                 <p class="text-[10px] text-amber-500 font-mono mt-1 border border-amber-500/30 bg-amber-900/20 px-2 py-0.5 rounded w-fit flex items-center gap-1">
-                    ⚠️ Using Estimated Location
-                 </p>
-              }
-
-              @if(game.currentZone(); as zone) {
-                <p class="text-slate-400 text-[10px] pl-4 mt-0.5">
-                  {{ zone.name }} • Health: 
-                  <span [class.text-red-400]="zone.health < 30" 
-                        [class.text-yellow-400]="zone.health >= 30 && zone.health < 70"
-                        [class.text-emerald-400]="zone.health >= 70">
-                    {{ zone.health }}%
-                  </span>
-                </p>
+            <div class="flex items-center gap-2 mb-1">
+              @if (isEditingName()) {
+                 <input #nameInput type="text" [value]="game.username()" (blur)="saveName(nameInput.value)" (keyup.enter)="saveName(nameInput.value)" class="bg-slate-800 text-white text-2xl font-bold rounded px-2 py-0.5 outline-none focus:ring-2 focus:ring-emerald-500 w-48" autofocus>
               } @else {
-                 <p class="text-slate-500 text-[10px] pl-4 italic">No zone data at current location.</p>
+                 <h1 (click)="startEditingName()" class="text-2xl font-bold text-white cursor-pointer hover:text-emerald-400 transition-colors">Hi, {{ game.username() }}</h1>
               }
+              <button (click)="startEditingName()" class="p-1 hover:bg-slate-700/50 rounded-lg transition-colors">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-400">
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+               <span>{{ game.currentAddress() }}</span>
             </div>
           </div>
-          <div class="text-right">
-             <div class="text-3xl font-black text-white">{{ game.totalPoints() }}</div>
-             <div class="text-xs text-slate-400 uppercase tracking-wider">Impact Points</div>
-          </div>
-        </div>
-
-        <!-- Narrative Impact Card (AI Generated Summary) -->
-        <div class="mb-6 bg-gradient-to-r from-slate-900 to-indigo-950/50 p-4 rounded-xl border border-indigo-500/30 shadow-lg relative overflow-hidden group">
-           <div class="absolute -right-4 -top-4 text-8xl opacity-5 group-hover:opacity-10 transition-opacity">📝</div>
-           <h3 class="text-indigo-300 font-bold text-xs uppercase tracking-wider mb-2">My Impact Story</h3>
-           <p class="text-slate-200 text-sm leading-relaxed italic">
-             "{{ game.weeklyImpactStory() }}"
-           </p>
-           <div class="mt-3 flex gap-4 text-xs font-mono text-slate-400">
-              <span class="flex items-center gap-1"><span class="text-emerald-400">🔥</span> {{ game.streakDays() }} Day Streak</span>
-              <span class="flex items-center gap-1"><span class="text-blue-400">⚖️</span> {{ (game.totalWasteWeight() / 1000) | number:'1.1-1' }}kg Saved</span>
-           </div>
-        </div>
-
-        <!-- Activity Mode Selector -->
-        <div class="mb-6 bg-slate-900/80 p-1 rounded-xl flex border border-slate-800 relative overflow-hidden">
-          <div class="absolute inset-y-1 bg-emerald-600 rounded-lg transition-all duration-300 ease-out shadow-lg"
-               [style.left.%]="getActivityOffset()"
-               style="width: 33.33%"></div>
-          
-          <button (click)="setActivity('Walking')" class="flex-1 relative z-10 py-2 text-center text-xs font-bold tracking-wider transition-colors"
-                  [class.text-white]="game.currentActivity() === 'Walking'"
-                  [class.text-slate-500]="game.currentActivity() !== 'Walking'">
-            Walking
-          </button>
-          <button (click)="setActivity('Running')" class="flex-1 relative z-10 py-2 text-center text-xs font-bold tracking-wider transition-colors"
-                  [class.text-white]="game.currentActivity() === 'Running'"
-                  [class.text-slate-500]="game.currentActivity() !== 'Running'">
-            Running
-          </button>
-          <button (click)="setActivity('Cycling')" class="flex-1 relative z-10 py-2 text-center text-xs font-bold tracking-wider transition-colors"
-                  [class.text-white]="game.currentActivity() === 'Cycling'"
-                  [class.text-slate-500]="game.currentActivity() !== 'Cycling'">
-            Cycling
+          <button class="p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors relative">
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
         </div>
 
-        <!-- Level Progress -->
-        <div class="bg-slate-800/50 rounded-lg p-4 backdrop-blur-sm border border-slate-700">
-           <div class="flex justify-between text-sm mb-2">
-             <span class="text-white font-medium">Level {{ game.level() }}</span>
-             <span class="text-emerald-300">{{ game.nextLevelProgress() | number:'1.0-0' }}%</span>
-           </div>
-           <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
-             <div class="h-full bg-emerald-500 transition-all duration-500" [style.width.%]="game.nextLevelProgress()"></div>
-           </div>
-        </div>
-      </div>
-
-      <!-- Zone Health Viz -->
-      <div class="p-6">
-        <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Community Health Map
-        </h2>
-        
-        @if (game.zones().length === 0) {
-           <div class="bg-slate-900 rounded-xl p-8 border border-slate-800 border-dashed text-center">
-              <p class="text-slate-400 text-sm">No zones discovered yet.</p>
-              <p class="text-slate-500 text-xs mt-1">Start scanning with GPS enabled to map your neighborhood.</p>
-           </div>
-        } @else {
-           <div class="bg-slate-900 rounded-xl p-4 border border-slate-800 shadow-xl overflow-hidden relative h-56">
-             <div #chartContainer class="w-full h-full"></div>
-             <div class="absolute bottom-4 right-4 text-xs text-slate-500 bg-black/50 px-2 py-1 rounded">
-                Real-time Data
+        <!-- Stats Cards (Glassmorphic) -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <div class="relative group overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:bg-white/10 hover:border-emerald-500/30">
+             <div class="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="w-6 h-6 text-emerald-400 mb-2">
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                </div>
+                <div class="text-2xl font-bold text-white mb-1">{{ game.greenCredits() }}</div>
+                <div class="text-xs text-emerald-300 uppercase tracking-wider font-bold">Credits</div>
              </div>
-           </div>
-        }
+          </div>
+          <div class="relative group overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:bg-white/10 hover:border-blue-500/30">
+             <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="w-6 h-6 text-blue-400 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <div class="text-2xl font-bold text-white mb-1">{{ game.totalPoints() }}</div>
+                <div class="text-xs text-blue-300 uppercase tracking-wider font-bold">XP</div>
+             </div>
+          </div>
+          <div class="relative group overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 transition-all hover:bg-white/10 hover:border-amber-500/30">
+             <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+             <div class="relative z-10">
+                <div class="w-6 h-6 text-amber-400 mb-2">
+                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.77 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                </div>
+                <div class="text-2xl font-bold text-white mb-1">{{ game.streakDays() }}</div>
+                <div class="text-xs text-amber-300 uppercase tracking-wider font-bold">Streak</div>
+             </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Recent Activity -->
-      <div class="px-6">
-        <h2 class="text-lg font-bold text-white mb-4">Recent Contributions</h2>
-        @if (game.scanHistory().length === 0) {
-          <div class="text-center py-8 text-slate-500 bg-slate-900/50 rounded-lg border border-slate-800 border-dashed">
-            <p>No scans yet. Select your activity and go hunt!</p>
+      <!-- Scrollable Content -->
+      <div class="px-6 space-y-6">
+        
+        <!-- Current Status -->
+        <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-white">Current Status</h3>
+            @if (game.currentZone(); as zone) {
+               <span class="px-3 py-1 text-xs font-medium rounded-full uppercase tracking-wider"
+                  [class.bg-emerald-500_20]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                  [class.text-emerald-300]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                  [class.bg-amber-500_20]="zone.status === 'Moderate'"
+                  [class.text-amber-300]="zone.status === 'Moderate'"
+                  [class.bg-red-500_20]="zone.status === 'Dirty' || zone.status === 'Critical'"
+                  [class.text-red-300]="zone.status === 'Dirty' || zone.status === 'Critical'">
+                  {{ zone.status }} ({{ zone.health }}%)
+               </span>
+            } @else {
+               <span class="px-3 py-1 bg-slate-700 text-slate-300 text-xs font-medium rounded-full uppercase tracking-wider">Unknown</span>
+            }
           </div>
-        } @else {
-          <div class="space-y-3">
-            @for (scan of game.scanHistory(); track scan.id) {
-              <!-- Clickable History Item -->
-              <div (click)="viewScan.emit(scan)" class="bg-slate-900 rounded-lg p-3 flex items-center gap-4 border border-slate-800 cursor-pointer hover:bg-slate-800 hover:border-slate-700 transition-all active:scale-[0.98]">
-                <img [src]="scan.imageThumbnail" class="w-12 h-12 rounded bg-slate-800 object-cover" alt="Waste">
-                <div class="flex-1">
-                  <div class="text-white font-medium">{{ scan.wasteType }}</div>
-                  <div class="flex items-center gap-2 text-xs">
-                    <span class="text-slate-400">{{ scan.timestamp | date:'shortTime' }}</span>
-                    <!-- Mode Badge -->
-                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
-                          [class.bg-emerald-900_30]="scan.claimType === 'cleanup'"
-                          [class.text-emerald-400]="scan.claimType === 'cleanup'"
-                          [class.border-emerald-500_30]="scan.claimType === 'cleanup'"
-                          [class.bg-slate-800]="scan.claimType === 'scout'"
-                          [class.text-slate-400]="scan.claimType === 'scout'"
-                          [class.border-slate-700]="scan.claimType === 'scout'">
-                      {{ scan.claimType }}
-                    </span>
-                    @if(scan.upcyclingRecipe && !scan.upcycleBonusClaimed) {
-                       <span class="text-indigo-400 font-bold animate-pulse">● DIY</span>
-                    }
-                  </div>
-                </div>
-                <div class="text-right">
-                  <div class="text-emerald-400 font-bold">+{{ scan.points }}</div>
-                  @if(scan.upcycleBonusClaimed) {
-                     <div class="text-[10px] text-indigo-400">DIY Done</div>
-                  }
-                </div>
+          <p class="text-slate-300 text-sm mb-5 leading-relaxed min-h-[3rem]">
+            {{ displayedStatus() }}<span class="animate-pulse text-emerald-400">|</span>
+          </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+              <div class="flex items-center gap-2 mb-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.77 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                <span class="text-xs text-slate-400 uppercase tracking-wider">Planted</span>
               </div>
-            }
+              <div class="text-xl font-bold text-white">{{ game.trees().length }} Trees</div>
+            </div>
+            <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-800">
+              <div class="flex items-center gap-2 mb-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span class="text-xs text-slate-400 uppercase tracking-wider">Offset</span>
+              </div>
+              <div class="text-xl font-bold text-white">{{ game.totalCo2Offset() | number:'1.1-1' }}kg CO₂</div>
+            </div>
           </div>
-        }
-      </div>
-      
-      <!-- Leaderboard (Local only) -->
-      <div class="p-6">
-         <h2 class="text-lg font-bold text-white mb-4">Your Rank</h2>
-         <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
-            @for (user of game.getLeaderboard(); track user.name) {
-               <div class="flex items-center justify-between p-4 border-b border-slate-800 last:border-0" 
-                    [class.bg-emerald-900_10]="user.isUser">
-                 <div class="flex items-center gap-3">
-                   <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-yellow-500 text-black">
-                     {{ user.rank }}
+        </div>
+
+        <!-- Rank Progress -->
+        <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Current Rank</h3>
+            <span class="text-emerald-400 font-medium">{{ game.nextRankProgress() | number:'1.0-0' }}%</span>
+          </div>
+          <div class="mb-3">
+            <div class="text-2xl font-bold text-transparent bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text mb-2">
+              {{ game.userRank() }}
+            </div>
+            <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div 
+                class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                [style.width.%]="game.nextRankProgress()"
+              ></div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400">Keep scanning and planting to level up.</p>
+        </div>
+
+        <!-- Quick Actions (MORPHING BUTTONS) -->
+        <div>
+          <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-2 gap-3">
+            
+            <!-- Scan Button (Morphing) -->
+            <button (click)="app.navTo('camera')" class="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-4 text-left transition-all hover:scale-[1.02] active:scale-95 group shadow-lg shadow-emerald-900/40 btn-particle">
+              <!-- Background Pattern -->
+              <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+              
+              <div class="relative z-10">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white mb-3 group-hover:scale-110 transition-transform drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                 <div class="text-white font-black text-lg">New Scan</div>
+                 <div class="text-emerald-100 text-xs font-medium opacity-80">Document area</div>
+              </div>
+            </button>
+            
+            <!-- Plant Button (Morphing) -->
+            <button (click)="goToPlanting()" class="relative overflow-hidden bg-slate-800 border border-slate-700 rounded-2xl p-4 text-left transition-all hover:scale-[1.02] active:scale-95 group hover:border-emerald-500/50 shadow-lg btn-particle">
+              <!-- Background Pattern -->
+              <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-8 -mt-8 blur-xl group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
+
+              <div class="relative z-10">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-emerald-400 mb-3 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                 <div class="text-white font-black text-lg">Plant Trees</div>
+                 <div class="text-slate-400 text-xs font-medium">Offset carbon</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div>
+          <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Recent Activity</h3>
+          <div class="space-y-3">
+             @if (game.scanHistory().length === 0) {
+                <div class="text-center py-6 border border-dashed border-slate-700 rounded-xl bg-slate-900/30">
+                   <p class="text-slate-500 text-xs">No activity yet. Start your journey!</p>
+                </div>
+             } @else {
+                @for (scan of game.scanHistory().slice(0, 5); track scan.id) {
+                   <div (click)="viewScan.emit(scan)" class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800 transition-colors">
+                      <div class="flex items-center gap-3">
+                         <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br"
+                              [class.from-emerald-500]="scan.claimType === 'cleanup'"
+                              [class.to-teal-500]="scan.claimType === 'cleanup'"
+                              [class.from-blue-500]="scan.claimType === 'scout'"
+                              [class.to-cyan-500]="scan.claimType === 'scout'">
+                            @if (scan.claimType === 'cleanup') {
+                               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            } @else {
+                               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            }
+                         </div>
+                         <div>
+                            <div class="text-white font-medium text-sm">{{ scan.wasteType }}</div>
+                            <div class="text-slate-400 text-xs">{{ scan.timestamp | date:'shortTime' }} • +{{ scan.points }} XP</div>
+                         </div>
+                      </div>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                    </div>
-                   <div>
-                     <span class="text-white block leading-none font-bold">
-                       {{ user.name }}
-                       @if(user.isUser) { <span class="text-emerald-400 text-[10px] ml-1">(You)</span> }
-                     </span>
-                     <span class="text-[10px] text-slate-500">{{ user.ward }}</span>
-                   </div>
-                 </div>
-                 <span class="text-slate-400 font-mono text-sm">{{ user.points }}</span>
-               </div>
-            }
-         </div>
+                }
+             }
+          </div>
+        </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fade-in 0.3s ease-out; }
+  `]
 })
 export class DashboardViewComponent implements AfterViewInit, OnDestroy {
   game = inject(GameService);
+  gemini = inject(GeminiService);
+  app = inject(AppComponent);
   viewScan = output<ScanRecord>();
   
-  @ViewChild('chartContainer') chartContainer!: ElementRef<HTMLDivElement>;
-  
   isEditingName = signal(false);
-
-  private resizeListener: any;
+  displayedStatus = signal('');
+  
+  private timeouts: any[] = [];
 
   constructor() {
     effect(() => {
-      const zones = this.game.zones();
-      // Ensure element is ready
-      setTimeout(() => {
-         this.renderChart(zones);
-      }, 0);
+      const text = this.game.weeklyImpactStory();
+      this.resetTypewriter();
+      this.typewrite(text, this.displayedStatus, 30);
     });
   }
-
+  
   ngAfterViewInit() {
-    this.renderChart(this.game.zones());
-    this.resizeListener = () => this.renderChart(this.game.zones());
-    window.addEventListener('resize', this.resizeListener);
+    // Initial trigger handled by effect
   }
-
+  
   ngOnDestroy() {
-    if (this.resizeListener) {
-      window.removeEventListener('resize', this.resizeListener);
-    }
+    this.timeouts.forEach(clearTimeout);
   }
 
-  startEditingName() {
-    this.isEditingName.set(true);
+  private resetTypewriter() {
+    this.displayedStatus.set('');
+    this.timeouts.forEach(clearTimeout);
+    this.timeouts = [];
   }
 
-  saveName(newName: string) {
-    this.game.updateUsername(newName);
-    this.isEditingName.set(false);
+  private typewrite(text: string, signalSetter: WritableSignal<string>, delay: number) {
+     if (!text) return;
+     const words = text.split(' ');
+     let i = 0;
+     const animate = () => {
+        if (i < words.length) {
+           const chunk = (i > 0 ? ' ' : '') + words[i];
+           signalSetter.update(s => s + chunk);
+           i++;
+           this.timeouts.push(setTimeout(animate, delay));
+        }
+     };
+     animate();
   }
 
-  setActivity(type: ActivityType) {
-    this.game.setActivity(type);
+  startEditingName() { this.isEditingName.set(true); }
+  saveName(name: string) { 
+     this.game.updateUsername(name);
+     this.isEditingName.set(false);
   }
 
-  getActivityOffset(): number {
-    switch (this.game.currentActivity()) {
-      case 'Running': return 33.33;
-      case 'Cycling': return 66.66;
-      default: return 0;
-    }
-  }
-
-  private renderChart(zones: Zone[]) {
-    if (!this.chartContainer?.nativeElement) return;
-    const el = this.chartContainer.nativeElement;
-    
-    // Clear
-    d3.select(el).selectAll('*').remove();
-    
-    const width = el.clientWidth;
-    const height = el.clientHeight;
-    
-    if (width === 0 || height === 0 || zones.length === 0) return;
-
-    const svg = d3.select(el)
-       .append('svg')
-       .attr('width', width)
-       .attr('height', height);
-
-    // Dynamic Chart Logic: Render as a list of bars since the count is variable
-    const x = d3.scaleBand()
-       .range([0, width])
-       .padding(0.2)
-       .domain(zones.map(z => z.id)); // Use ID for uniqueness
-
-    const y = d3.scaleLinear()
-       .range([height, 0])
-       .domain([0, 100]);
-
-    svg.selectAll('.bar')
-       .data(zones)
-       .enter()
-       .append('rect')
-       .attr('x', d => x(d.id)!)
-       .attr('y', d => y(d.health))
-       .attr('width', x.bandwidth())
-       .attr('height', d => height - y(d.health))
-       .attr('rx', 2)
-       .attr('fill', d => {
-          if (d.health < 30) return '#f87171'; // Red-400
-          if (d.health < 70) return '#facc15'; // Yellow-400
-          return '#10b981'; // Emerald-500
-       });
-       
-    // Labels if there are few bars
-    if (zones.length < 10) {
-      svg.selectAll('.label')
-        .data(zones)
-        .enter()
-        .append('text')
-        .attr('x', d => x(d.id)! + x.bandwidth() / 2)
-        .attr('y', d => y(d.health) - 5)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#94a3b8')
-        .attr('font-size', '10px')
-        .text(d => d.name.substring(0, 8));
-    }
+  goToPlanting() {
+     // Navigation target is irrelevant now as Community View is a list
+     this.app.navTo('community');
   }
 }

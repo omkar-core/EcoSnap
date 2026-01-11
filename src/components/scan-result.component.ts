@@ -22,28 +22,31 @@ import { GameService, ClaimType } from '../services/game.service';
         <!-- Scrollable Content -->
         <div class="overflow-y-auto flex-1">
           <!-- Header Image & Badge -->
-          <div class="relative h-64 bg-slate-800">
-             <img [src]="imageSrc()" class="w-full h-full object-cover opacity-80">
+          <div class="relative h-64 bg-slate-800 group">
+             <img [src]="imageSrc()" class="w-full h-full object-cover opacity-90 transition-opacity group-hover:opacity-100">
              <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
              
              <!-- Confidence Tag -->
-             <div class="absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-slate-600/50">
-               <div class="w-2 h-2 rounded-full" 
+             <div class="absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-slate-600/50 shadow-lg">
+               <div class="w-2 h-2 rounded-full shadow-[0_0_10px_currentColor]" 
                     [class.bg-emerald-400]="result().confidence > 80"
+                    [class.text-emerald-400]="result().confidence > 80"
                     [class.bg-yellow-400]="result().confidence > 50 && result().confidence <= 80"
-                    [class.bg-red-400]="result().confidence <= 50"></div>
-               <span class="text-xs font-mono text-white">{{ result().confidence }}% Match</span>
+                    [class.text-yellow-400]="result().confidence > 50 && result().confidence <= 80"
+                    [class.bg-red-400]="result().confidence <= 50"
+                    [class.text-red-400]="result().confidence <= 50"></div>
+               <span class="text-xs font-mono text-white font-bold">{{ result().confidence }}% Match</span>
              </div>
 
              <!-- Risk / Condition Badges -->
              <div class="absolute top-4 left-4 flex flex-col gap-2">
                 @if (result().riskLevel !== 'Low') {
-                   <div class="bg-red-900/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-red-500/50 w-fit">
+                   <div class="bg-red-900/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-red-500/50 w-fit shadow-lg shadow-red-900/20">
                      <span class="text-xs font-bold text-red-100 uppercase">⚠️ {{ result().riskLevel }} Risk</span>
                    </div>
                 }
                 @if (result().condition === 'Degraded/Weathered') {
-                   <div class="bg-amber-900/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-amber-500/50 w-fit">
+                   <div class="bg-amber-900/80 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-amber-500/50 w-fit shadow-lg shadow-amber-900/20">
                      <span class="text-xs font-bold text-amber-100 uppercase">🌧️ Weathered</span>
                    </div>
                 }
@@ -52,18 +55,18 @@ import { GameService, ClaimType } from '../services/game.service';
              <!-- Title Block -->
              <div class="absolute bottom-6 left-6 right-6">
                <div class="flex flex-wrap items-center gap-2 mb-2">
-                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-sm">
                    Detected
                  </span>
                  @for (material of result().materialComposition; track material) {
-                   <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-700/50 text-slate-300 border border-slate-600/30">
+                   <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-700/50 text-slate-300 border border-slate-600/30 backdrop-blur-sm">
                      {{ material }}
                    </span>
                  }
                </div>
-               <h2 class="text-3xl font-black text-white leading-tight drop-shadow-lg">{{ result().wasteType }}</h2>
-               <p class="text-slate-300 text-sm mt-2 line-clamp-2 leading-relaxed opacity-90 h-10">
-                 "{{ displayedStory() }}<span class="animate-pulse">|</span>"
+               <h2 class="text-4xl font-black text-white leading-tight drop-shadow-lg tracking-tight">{{ result().wasteType }}</h2>
+               <p class="text-slate-300 text-sm mt-2 line-clamp-2 leading-relaxed opacity-90 h-10 font-medium">
+                 "{{ displayedStory() }}<span class="animate-pulse text-emerald-400">|</span>"
                </p>
              </div>
           </div>
@@ -72,9 +75,10 @@ import { GameService, ClaimType } from '../services/game.service';
             
             <!-- Fun Fact / Did You Know -->
             @if (result().funFact) {
-              <div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-4 flex gap-4 items-start shadow-sm">
+              <div class="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-500/20 rounded-2xl p-4 flex gap-4 items-start shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-500/10 blur-xl rounded-full pointer-events-none"></div>
                 <div class="text-2xl pt-1">💡</div>
-                <div>
+                <div class="relative z-10">
                   <h4 class="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Did You Know?</h4>
                   <p class="text-indigo-100 text-sm leading-relaxed italic">
                     "{{ displayedFunFact() }}"
@@ -84,13 +88,13 @@ import { GameService, ClaimType } from '../services/game.service';
             }
 
             <!-- Ultimate Recycling Guide -->
-            <div class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 shadow-md">
-               <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between">
+            <div class="bg-slate-800/80 backdrop-blur rounded-2xl overflow-hidden border border-slate-700 shadow-xl">
+               <div class="p-4 bg-slate-800/50 border-b border-slate-700 flex items-center justify-between">
                   <h3 class="text-white font-bold flex items-center gap-2">
                     <span class="text-xl">♻️</span> Recycling Guide
                   </h3>
                   <div class="flex flex-col items-end">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-1 shadow-sm"
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-1 shadow-sm border border-white/10"
                           [class.bg-blue-600]="result().recyclingGuidance.category.includes('Dry')"
                           [class.bg-green-600]="result().recyclingGuidance.category.includes('Wet')"
                           [class.bg-red-600]="result().recyclingGuidance.category.includes('Hazardous') || result().recyclingGuidance.category.includes('Red')"
@@ -101,14 +105,14 @@ import { GameService, ClaimType } from '../services/game.service';
                     <span class="text-[10px] text-slate-400 font-mono">{{ result().biologicalCategory }}</span>
                   </div>
                </div>
-               <div class="p-4 space-y-4">
+               <div class="p-5 space-y-5">
                   <!-- Prep Steps -->
                   <div>
-                    <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Preparation Steps</h4>
-                    <ul class="space-y-2">
+                    <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-3">Preparation Steps</h4>
+                    <ul class="space-y-3">
                       @for (step of result().recyclingGuidance.preparationSteps; track step) {
                         <li class="flex items-start gap-3 text-sm text-slate-200">
-                          <span class="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 text-emerald-400">✓</span>
+                          <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 text-emerald-400 border border-emerald-500/30">✓</div>
                           {{ step }}
                         </li>
                       }
@@ -116,41 +120,41 @@ import { GameService, ClaimType } from '../services/game.service';
                   </div>
                   
                   <!-- Environmental Impact -->
-                  <div class="pt-3 border-t border-slate-700">
-                     <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Impact</h4>
-                     <p class="text-emerald-400 text-sm italic">{{ displayedImpact() }}</p>
+                  <div class="pt-4 border-t border-slate-700/50">
+                     <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Estimated Impact</h4>
+                     <p class="text-emerald-400 text-sm font-medium italic">{{ displayedImpact() }}</p>
                   </div>
                </div>
             </div>
 
             <!-- AI Reasoning (Deep Analysis) -->
-             <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+             <div class="bg-slate-800/40 rounded-2xl p-5 border border-slate-700/50">
               <h4 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
                 🤖 Vision Analysis & Condition
               </h4>
               <p class="text-slate-300 text-sm leading-relaxed min-h-[3rem]">
                 {{ displayedReasoning() }}
               </p>
-              <div class="mt-3 flex gap-2 flex-wrap">
-                 <span class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400 border border-slate-700">Condition: <strong class="text-white">{{ result().condition }}</strong></span>
-                 <span class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400 border border-slate-700">Weight: <strong class="text-white">{{ result().estimatedWeight }}g</strong></span>
+              <div class="mt-4 flex gap-2 flex-wrap">
+                 <span class="text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-600/50 shadow-sm">Condition: <strong class="text-white">{{ result().condition }}</strong></span>
+                 <span class="text-xs bg-slate-800 px-3 py-1.5 rounded-lg text-slate-300 border border-slate-600/50 shadow-sm">Weight: <strong class="text-white">{{ result().estimatedWeight }}g</strong></span>
                  @if(result().isRecyclable) {
-                    <span class="text-xs bg-emerald-900/30 px-2 py-1 rounded text-emerald-400 border border-emerald-500/30 font-bold">Recyclable</span>
+                    <span class="text-xs bg-emerald-900/30 px-3 py-1.5 rounded-lg text-emerald-400 border border-emerald-500/30 font-bold shadow-sm">Recyclable</span>
                  } @else {
-                    <span class="text-xs bg-red-900/30 px-2 py-1 rounded text-red-400 border border-red-500/30 font-bold">Non-Recyclable</span>
+                    <span class="text-xs bg-red-900/30 px-3 py-1.5 rounded-lg text-red-400 border border-red-500/30 font-bold shadow-sm">Non-Recyclable</span>
                  }
               </div>
             </div>
 
             <!-- Upcycling Suggestion -->
             @if (result().upcyclingRecipe; as recipe) {
-            <div class="bg-gradient-to-br from-indigo-900/40 to-violet-900/40 p-5 rounded-xl border border-indigo-500/30 relative overflow-hidden group shadow-lg">
-               <div class="absolute -right-6 -top-6 text-indigo-500/10 text-8xl transition-transform group-hover:rotate-12 select-none">💡</div>
+            <div class="bg-gradient-to-br from-indigo-900/40 to-violet-900/40 p-6 rounded-2xl border border-indigo-500/30 relative overflow-hidden group shadow-2xl">
+               <div class="absolute -right-6 -top-6 text-indigo-500/10 text-9xl transition-transform group-hover:rotate-12 select-none pointer-events-none">💡</div>
                
                <!-- Header -->
-               <div class="flex justify-between items-start mb-5 relative z-10">
+               <div class="flex justify-between items-start mb-6 relative z-10">
                  <div class="flex-1 mr-4">
-                   <h4 class="text-indigo-400 font-bold text-[10px] uppercase tracking-wider mb-1 flex items-center gap-1">
+                   <h4 class="text-indigo-400 font-bold text-[10px] uppercase tracking-wider mb-2 flex items-center gap-1">
                       Gemini Upcycling Engine
                    </h4>
                    <h3 class="text-white font-bold text-xl leading-tight">{{ displayedIdea() }}</h3>
@@ -181,14 +185,14 @@ import { GameService, ClaimType } from '../services/game.service';
                  
                  <!-- Materials Grid -->
                  @if (recipe.materialsNeeded && recipe.materialsNeeded.length > 0) {
-                   <div class="bg-indigo-950/50 rounded-lg p-3 border border-indigo-500/20">
-                     <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
+                   <div class="bg-indigo-950/50 rounded-xl p-4 border border-indigo-500/20">
+                     <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-3 flex items-center gap-1">
                        🛠️ Materials Needed
                      </h5>
                      <div class="flex flex-wrap gap-2">
                        @for (item of recipe.materialsNeeded; track item) {
-                         <span class="text-xs text-slate-200 bg-slate-900/80 px-2.5 py-1.5 rounded-md border border-indigo-500/20 flex items-center gap-2 shadow-sm">
-                           <span class="w-1 h-1 rounded-full bg-indigo-400"></span> {{ item }}
+                         <span class="text-xs text-slate-200 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/20 flex items-center gap-2 shadow-sm">
+                           <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> {{ item }}
                          </span>
                        }
                      </div>
@@ -198,7 +202,7 @@ import { GameService, ClaimType } from '../services/game.service';
                  <!-- Instructions Stepper -->
                  @if (recipe.instructions && recipe.instructions.length > 0) {
                    <div>
-                      <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-3 flex items-center gap-1">
+                      <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-4 flex items-center gap-1">
                         📝 Step-by-Step Instructions
                       </h5>
                       <div class="space-y-0 relative pl-2">
@@ -226,44 +230,51 @@ import { GameService, ClaimType } from '../services/game.service';
         </div>
 
         <!-- FOOTER ACTIONS -->
-        <div class="p-4 bg-slate-900 border-t border-slate-800 safe-area-bottom">
+        <div class="p-6 bg-slate-900 border-t border-slate-800 safe-area-bottom">
           
           @if (!isHistory()) {
             <!-- NEW SCAN ACTIONS -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-4">
               <!-- Scout Button -->
-              <button (click)="handleClaim('scout')" class="flex flex-col items-center justify-center py-3 px-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all group active:scale-95">
-                 <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">👀</span>
-                 <span class="text-slate-300 font-bold text-xs uppercase">Just Scouted</span>
-                 <span class="text-emerald-400 font-black text-sm mt-1">+{{ pointsScout() }} XP</span>
+              <button (click)="handleClaim('scout')" class="relative overflow-hidden flex flex-col items-center justify-center py-4 px-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl transition-all group active:scale-95 shadow-lg active:border-emerald-500/50">
+                 <div class="relative z-10 flex flex-col items-center">
+                    <span class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">👀</span>
+                    <span class="text-slate-300 font-bold text-xs uppercase tracking-wider">Just Scouted</span>
+                    <span class="text-emerald-400 font-black text-sm mt-1 bg-slate-900/50 px-2 py-0.5 rounded">+{{ pointsScout() }} XP</span>
+                 </div>
               </button>
 
-              <!-- Cleanup Button (Primary) -->
-              <button (click)="handleClaim('cleanup')" class="flex flex-col items-center justify-center py-3 px-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group relative overflow-hidden active:scale-95">
-                 <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+              <!-- Cleanup Button (PARTICLE EFFECT) -->
+              <button (click)="handleClaim('cleanup')" class="relative overflow-hidden flex flex-col items-center justify-center py-4 px-4 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 border border-emerald-400 rounded-2xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.3)] group active:scale-95 btn-particle btn-shockwave">
                  
-                 <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🧤</span>
-                 <span class="text-white font-bold text-xs uppercase">I Cleaned It</span>
-                 <span class="text-white font-black text-sm mt-1">+{{ pointsCleanup() }} XP</span>
+                 <!-- Shimmer Effect -->
+                 <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>
+                 
+                 <div class="relative z-10 flex flex-col items-center">
+                    <span class="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300 filter drop-shadow-md">🧤</span>
+                    <span class="text-white font-black text-xs uppercase tracking-wider">I Cleaned It</span>
+                    <span class="text-emerald-900 font-black text-sm mt-1 bg-white/90 px-2 py-0.5 rounded shadow-sm">+{{ pointsCleanup() }} XP</span>
+                 </div>
               </button>
             </div>
           } @else {
              <!-- HISTORY VIEW ACTIONS -->
              @if (result().upcyclingRecipe) {
                @if (!upcycleClaimed()) {
-                  <button (click)="claimUpcycle.emit()" class="w-full flex flex-col items-center justify-center py-4 px-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] group relative overflow-hidden active:scale-95">
-                    <span class="text-white font-bold text-sm uppercase flex items-center gap-2">
+                  <button (click)="claimUpcycle.emit()" class="w-full flex flex-col items-center justify-center py-5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 border border-indigo-400 rounded-2xl transition-all shadow-[0_4px_25px_rgba(99,102,241,0.4)] group relative overflow-hidden active:scale-95 btn-shockwave">
+                    <span class="text-white font-black text-base uppercase flex items-center gap-2 tracking-wide">
                        🚀 I Completed This Project
                     </span>
-                    <span class="text-indigo-200 text-xs mt-1">Claim +50 Upcycling Bonus XP</span>
+                    <span class="text-indigo-100 text-xs mt-1 font-medium bg-white/10 px-2 py-0.5 rounded">Claim +50 Upcycling Bonus XP</span>
                   </button>
                } @else {
-                  <div class="w-full py-4 text-center bg-slate-800 border border-slate-700 rounded-xl text-indigo-400 font-bold text-sm uppercase flex items-center justify-center gap-2">
-                     ✅ Upcycling Project Completed
+                  <div class="w-full py-5 text-center bg-slate-800/80 border border-slate-700 rounded-2xl text-indigo-400 font-bold text-sm uppercase flex items-center justify-center gap-2 shadow-inner">
+                     <span class="bg-indigo-500/20 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>
+                     Upcycling Project Completed
                   </div>
                }
              } @else {
-                <button (click)="close.emit()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300 font-bold text-sm uppercase transition-colors">
+                <button (click)="close.emit()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-slate-300 font-bold text-sm uppercase transition-colors tracking-wide active:scale-95">
                   Close Detail View
                 </button>
              }
@@ -278,12 +289,10 @@ import { GameService, ClaimType } from '../services/game.service';
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
     @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
     .animate-fade-in { animation: fade-in 0.3s ease-out; }
-    @keyframes shimmer { 100% { transform: translateX(100%); } }
-    .group-hover\\:animate-shimmer { animation: shimmer 1s infinite; }
-    .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+    .safe-area-bottom { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
   `]
 })
 export class ScanResultComponent implements OnDestroy {
