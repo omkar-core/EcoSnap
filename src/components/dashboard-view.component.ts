@@ -1,7 +1,6 @@
-import { Component, inject, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, output, signal, computed, ChangeDetectionStrategy, WritableSignal } from '@angular/core';
+import { Component, inject, AfterViewInit, OnDestroy, effect, output, signal, ChangeDetectionStrategy, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as d3 from 'd3';
-import { GameService, ScanRecord, Zone } from '../services/game.service';
+import { GameService, ScanRecord } from '../services/game.service';
 import { GeminiService } from '../services/gemini.service';
 import { AppComponent } from '../app.component'; 
 
@@ -202,11 +201,7 @@ import { AppComponent } from '../app.component';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fade-in 0.3s ease-out; }
-  `]
+  `
 })
 export class DashboardViewComponent implements AfterViewInit, OnDestroy {
   game = inject(GameService);
@@ -263,7 +258,6 @@ export class DashboardViewComponent implements AfterViewInit, OnDestroy {
   }
 
   goToPlanting() {
-     // Navigation target is irrelevant now as Community View is a list
      this.app.navTo('community');
   }
 }

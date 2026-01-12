@@ -106,7 +106,8 @@ export class GameService {
     GREEN_CREDITS: 'swh_credits',
     USERNAME: 'swh_username',
     DEVICE_ID: 'swh_device_id',
-    ONBOARDED: 'swh_onboarded'
+    ONBOARDED: 'swh_onboarded',
+    LOCATION: 'swh_last_location' // Added for location caching
   };
 
   // Fallback Location (Mumbai) for when GPS fails/denied
@@ -125,7 +126,9 @@ export class GameService {
 
   // Activity State
   readonly currentActivity = signal<ActivityType>('Walking');
-  readonly userLocation = signal<{ lat: number, lng: number } | null>(null);
+  
+  // Initialize location from cache if available
+  readonly userLocation = signal<{ lat: number, lng: number } | null>(this.load(this.KEYS.LOCATION, null));
   readonly currentAddress = signal<string>('Waiting for GPS...'); 
   
   // Navigation State
@@ -387,6 +390,7 @@ export class GameService {
     effect(() => this.safeSave(this.KEYS.ZONES, this.zones()));
     effect(() => this.safeSave(this.KEYS.TREES, this.trees()));
     effect(() => this.safeSave(this.KEYS.GREEN_CREDITS, this.greenCredits()));
+    effect(() => this.safeSave(this.KEYS.LOCATION, this.userLocation()));
   }
 
   // --- INTELLIGENT MAPPING SYSTEM ---
@@ -611,6 +615,11 @@ export class GameService {
   }
 
   private startWatchingPosition() {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+       this.handleGeoError({ code: 2, message: 'Geolocation not supported' } as GeolocationPositionError);
+       return;
+    }
+
     if (this.watchId !== null) navigator.geolocation.clearWatch(this.watchId);
 
     this.watchId = navigator.geolocation.watchPosition(
@@ -624,22 +633,27 @@ export class GameService {
   }
 
   private handleGeoError(error: GeolocationPositionError) {
-     let userMsg = 'Location signal lost.';
-     let useFallback = false;
+     let userMsg = '';
+     let useFallback = true;
      
-     if (error.code === 1) { // PERMISSION_DENIED
-        userMsg = 'Location access denied. Using default sector (Mumbai) for analysis.';
-        useFallback = true;
-     } else if (error.code === 2) { // POSITION_UNAVAILABLE
-        userMsg = 'GPS signal unavailable. Using default sector.';
-        useFallback = true;
-     } else if (error.code === 3) { // TIMEOUT
-        userMsg = 'Location request timed out. Switched to default sector.';
-        useFallback = true;
+     // Specific error messaging based on code
+     switch(error.code) {
+        case 1: // PERMISSION_DENIED
+           userMsg = "Location services are disabled. We'll use Mumbai as your approximate location for now. Enable location for more accurate results.";
+           break;
+        case 2: // POSITION_UNAVAILABLE
+           userMsg = "GPS signal unavailable. Using default location. Check your network or move to an open area.";
+           break;
+        case 3: // TIMEOUT
+           userMsg = "Location request timed out. Using default location. Check your internet connection.";
+           break;
+        default:
+           userMsg = "Location signal lost. Switching to manual sector mode.";
      }
 
      this.locationError.set(userMsg);
 
+     // Graceful Degradation: Only use fallback if we don't have a cached location
      if (useFallback && !this.userLocation()) {
         this.userLocation.set(this.FALLBACK_LOCATION);
         this.ensureCurrentZone(this.FALLBACK_LOCATION.lat, this.FALLBACK_LOCATION.lng);

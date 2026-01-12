@@ -146,84 +146,99 @@ import { GameService, ClaimType } from '../services/game.service';
               </div>
             </div>
 
-            <!-- Upcycling Suggestion -->
+            <!-- Upcycling Suggestion (Enhanced) -->
             @if (result().upcyclingRecipe; as recipe) {
-            <div class="bg-gradient-to-br from-indigo-900/40 to-violet-900/40 p-6 rounded-2xl border border-indigo-500/30 relative overflow-hidden group shadow-2xl">
-               <div class="absolute -right-6 -top-6 text-indigo-500/10 text-9xl transition-transform group-hover:rotate-12 select-none pointer-events-none">💡</div>
-               
-               <!-- Header -->
-               <div class="flex justify-between items-start mb-6 relative z-10">
-                 <div class="flex-1 mr-4">
-                   <h4 class="text-indigo-400 font-bold text-[10px] uppercase tracking-wider mb-2 flex items-center gap-1">
-                      Gemini Upcycling Engine
-                   </h4>
-                   <h3 class="text-white font-bold text-xl leading-tight">{{ displayedIdea() }}</h3>
-                 </div>
-                 
-                 <div class="flex flex-col items-end gap-2 shrink-0 text-right">
-                   @if (recipe.difficulty) {
-                     <div class="flex flex-col items-end">
-                       <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-0.5">Difficulty</span>
-                       <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider border shadow-sm"
-                             [class]="getDifficultyColor(recipe.difficulty)">
-                         {{ recipe.difficulty }}
-                       </span>
-                     </div>
-                   }
-                   @if (recipe.estimatedTime) {
-                     <div class="flex flex-col items-end mt-1">
-                        <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider mb-0.5">Est. Time</span>
-                        <span class="text-xs text-slate-200 font-mono flex items-center gap-1 bg-black/20 px-2 py-0.5 rounded border border-white/5">
-                          ⏱️ {{ recipe.estimatedTime }}
+              <div class="relative overflow-hidden rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-900/60 to-purple-900/60 shadow-2xl transition-all group">
+                
+                <!-- Decorative Background -->
+                <div class="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl"></div>
+                <div class="pointer-events-none absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl"></div>
+
+                <!-- Header Section -->
+                <div class="relative border-b border-indigo-500/20 bg-black/20 p-6 backdrop-blur-sm">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="mb-2 flex items-center gap-2">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-lg shadow-inner shadow-indigo-500/10">✨</span>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-300">Upcycling Recipe</h3>
+                      </div>
+                      <h2 class="text-xl font-bold leading-tight text-white">{{ displayedIdea() || recipe.idea }}</h2>
+                    </div>
+                    
+                    <!-- Share Button -->
+                    <button (click)="shareRecipe(recipe)" class="group flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-indigo-200 transition-all hover:bg-indigo-500 hover:text-white active:scale-95" title="Share Recipe">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    </button>
+                  </div>
+
+                  <!-- Meta Badges -->
+                  <div class="mt-4 flex flex-wrap gap-3">
+                    @if (recipe.difficulty) {
+                      <div class="flex items-center gap-2 rounded-full border border-white/5 bg-black/30 px-3 py-1.5 shadow-sm">
+                        <span class="text-xs font-bold uppercase text-slate-400">Difficulty</span>
+                        <span class="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                              [class]="getDifficultyColor(recipe.difficulty)">
+                          {{ recipe.difficulty }}
                         </span>
-                     </div>
-                   }
-                 </div>
-               </div>
+                      </div>
+                    }
+                    @if (recipe.estimatedTime) {
+                      <div class="flex items-center gap-2 rounded-full border border-white/5 bg-black/30 px-3 py-1.5 shadow-sm">
+                        <span class="text-xs font-bold uppercase text-slate-400">Time</span>
+                        <span class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-indigo-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                          {{ recipe.estimatedTime }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
 
-               <div class="relative z-10 space-y-6">
-                 
-                 <!-- Materials Grid -->
-                 @if (recipe.materialsNeeded && recipe.materialsNeeded.length > 0) {
-                   <div class="bg-indigo-950/50 rounded-xl p-4 border border-indigo-500/20">
-                     <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-3 flex items-center gap-1">
-                       🛠️ Materials Needed
-                     </h5>
-                     <div class="flex flex-wrap gap-2">
-                       @for (item of recipe.materialsNeeded; track item) {
-                         <span class="text-xs text-slate-200 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/20 flex items-center gap-2 shadow-sm">
-                           <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> {{ item }}
-                         </span>
-                       }
-                     </div>
-                   </div>
-                 }
+                <div class="p-6">
+                  <!-- Materials Section -->
+                  @if (recipe.materialsNeeded && recipe.materialsNeeded.length > 0) {
+                    <div class="mb-8">
+                      <h4 class="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-indigo-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.4a2 2 0 0 0-2.83 0L2 19V2h10l8.38-8.6a2 2 0 0 0 0-2.83Z"/><path d="M2 2h20v20H2Z"/></svg>
+                        Materials Needed
+                      </h4>
+                      <div class="grid gap-2 sm:grid-cols-2">
+                        @for (item of recipe.materialsNeeded; track item) {
+                          <label class="group flex cursor-pointer items-start gap-3 rounded-xl border border-white/5 bg-white/5 p-3 transition-colors hover:border-indigo-500/30 hover:bg-white/10">
+                            <div class="relative flex items-center pt-0.5">
+                              <input type="checkbox" class="peer h-4 w-4 cursor-pointer appearance-none rounded border border-indigo-400/50 bg-black/40 checked:bg-indigo-500 checked:border-indigo-500 transition-all">
+                              <svg class="pointer-events-none absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span class="text-sm font-medium text-slate-300 group-hover:text-white transition-colors peer-checked:line-through peer-checked:opacity-50">{{ item }}</span>
+                          </label>
+                        }
+                      </div>
+                    </div>
+                  }
 
-                 <!-- Instructions Stepper -->
-                 @if (recipe.instructions && recipe.instructions.length > 0) {
-                   <div>
-                      <h5 class="text-indigo-300 text-[10px] font-bold uppercase tracking-wider mb-4 flex items-center gap-1">
-                        📝 Step-by-Step Instructions
-                      </h5>
-                      <div class="space-y-0 relative pl-2">
-                        <!-- Connecting Line -->
-                        <div class="absolute left-[19px] top-2 bottom-4 w-px bg-indigo-500/20"></div>
-                        
+                  <!-- Instructions Section -->
+                  @if (recipe.instructions && recipe.instructions.length > 0) {
+                    <div>
+                      <h4 class="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-indigo-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Instructions
+                      </h4>
+                      <div class="relative space-y-6 pl-4 before:absolute before:bottom-0 before:left-[19px] before:top-2 before:w-px before:bg-indigo-500/20">
                         @for (step of recipe.instructions; track step; let i = $index) {
-                          <div class="flex gap-4 relative pb-6 last:pb-0 group/step">
-                            <span class="relative z-10 w-8 h-8 rounded-full bg-indigo-900/80 text-indigo-300 flex items-center justify-center text-xs font-bold shrink-0 border border-indigo-500/30 group-hover/step:bg-indigo-500 group-hover/step:text-white group-hover/step:border-indigo-400 transition-all shadow-[0_0_0_4px_rgba(15,23,42,1)]">
+                          <div class="relative flex gap-4 group/step">
+                            <div class="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-indigo-500/30 bg-indigo-950 text-sm font-bold text-indigo-300 shadow-lg ring-4 ring-indigo-900/20 group-hover/step:bg-indigo-600 group-hover/step:text-white transition-colors">
                               {{ i + 1 }}
-                            </span>
-                            <div class="text-sm text-slate-300 leading-relaxed pt-1 group-hover/step:text-slate-100 transition-colors bg-slate-800/50 p-3 rounded-lg border border-white/5 w-full">
+                            </div>
+                            <div class="rounded-2xl border border-white/5 bg-white/5 p-4 text-sm leading-relaxed text-slate-300 shadow-sm transition-all hover:bg-white/10 hover:text-white w-full group-hover/step:border-indigo-500/30">
                               {{ step }}
                             </div>
                           </div>
                         }
                       </div>
-                   </div>
-                 }
-               </div>
-            </div>
+                    </div>
+                  }
+                </div>
+              </div>
             }
 
           </div>
@@ -395,6 +410,20 @@ export class ScanResultComponent implements OnDestroy {
       case 'Medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
       case 'Hard': return 'bg-red-500/20 text-red-300 border-red-500/30';
       default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    }
+  }
+
+  shareRecipe(recipe: any) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({
+        title: `Upcycle Idea: ${recipe.idea}`,
+        text: `Check out this upcycling project for ${this.result().wasteType}!\n\n${recipe.instructions.join('\n')}`,
+        url: window.location.href
+      }).catch(err => console.log('Share failed', err));
+    } else {
+      // Fallback
+      navigator.clipboard.writeText(`Upcycle Idea: ${recipe.idea}\n\n${recipe.instructions.join('\n')}`);
+      this.game.showToast('Recipe copied to clipboard!', 'success');
     }
   }
 }

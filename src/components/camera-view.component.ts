@@ -24,7 +24,7 @@ interface PassiveItem {
       
       <!-- Fallback / Error UI (Upload Mode) -->
       @if (cameraError()) {
-        <div class="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 animate-fade-in">
+        <div class="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 animate-fade-in text-center">
            <!-- Close Button -->
            <button (click)="close.emit()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 transition-colors rounded-full hover:bg-slate-800">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,16 +42,26 @@ interface PassiveItem {
            </div>
            
            <h3 class="text-white font-bold text-2xl mb-3 tracking-tight">Camera Unavailable</h3>
-           <p class="text-slate-400 text-center max-w-xs mb-8 leading-relaxed text-sm">
+           
+           <div class="bg-slate-900/80 rounded-xl p-4 mb-8 border border-slate-800 max-w-sm">
+             <p class="text-slate-300 text-sm leading-relaxed mb-3 font-medium">
+               @if (permissionDenied()) {
+                  Camera access was denied. Please enable it in settings:
+               } @else {
+                  We couldn't detect a camera. You can still play by uploading photos.
+               }
+             </p>
+             
              @if (permissionDenied()) {
-                Camera access was blocked. Please check your browser's address bar or settings to allow camera permissions, then refresh the page.
-             } @else {
-                We couldn't access the camera. Please ensure no other apps are using it and try again.
+               <div class="text-xs text-indigo-300 font-mono bg-indigo-950/30 p-2 rounded border border-indigo-500/20">
+                 {{ getInstruction() }}
+               </div>
              }
-           </p>
+           </div>
 
            <div class="w-full max-w-xs space-y-3">
-             <label class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-xl cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-3 shadow-lg shadow-emerald-900/40 group">
+             <label class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-xl cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-3 shadow-lg shadow-emerald-900/40 group relative overflow-hidden">
+                 <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                  </svg>
@@ -60,7 +70,7 @@ interface PassiveItem {
              </label>
 
              <button (click)="startCamera()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-6 rounded-xl transition-colors border border-slate-700">
-               Retry Camera
+               Retry Camera Access
              </button>
            </div>
         </div>
@@ -373,6 +383,18 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     return this.hasMovedEnough() ? 'DETECTING...' : 'WAITING FOR MOVEMENT';
   }
 
+  getInstruction() {
+     if (typeof navigator === 'undefined') return 'Check camera permissions.';
+     const ua = navigator.userAgent.toLowerCase();
+     if (ua.includes('iphone') || ua.includes('ipad')) {
+         return "Go to Settings → Safari → Camera → Allow";
+     } else if (ua.includes('android')) {
+         return "Go to Settings → Site Settings → Camera → Allow";
+     } else {
+         return "Click the lock/camera icon in your browser address bar.";
+     }
+  }
+
   private checkPassiveTrigger() {
     if (this.isScanningBackground()) return;
 
@@ -450,7 +472,7 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     this.cameraError.set(false);
     this.permissionDenied.set(false);
     
-    if (!navigator.mediaDevices?.getUserMedia) {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       this.cameraError.set(true);
       return;
     }
@@ -512,13 +534,18 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     const minDim = Math.min(video.videoWidth, video.videoHeight);
     const sx = (video.videoWidth - minDim) / 2;
     const sy = (video.videoHeight - minDim) / 2;
-    const targetDim = 512; 
+    
+    // PREPROCESSING: Enhance resolution and apply isolation filters
+    const targetDim = 768; // Higher resolution for label reading
 
     const canvas = document.createElement('canvas');
     canvas.width = targetDim;
     canvas.height = targetDim;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return null;
+
+    // Apply Client-Side Enhancements (Simulating Preprocessing)
+    ctx.filter = 'contrast(1.15) brightness(1.05) saturate(1.1)';
 
     ctx.drawImage(video, sx, sy, minDim, minDim, 0, 0, targetDim, targetDim);
 

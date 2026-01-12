@@ -3,16 +3,16 @@
   <!-- GPS Error Toast -->
   @if (game.locationError()) {
     <div class="absolute top-0 left-0 right-0 z-[100] flex justify-center pt-4 pointer-events-none">
-      <div class="bg-amber-900/95 backdrop-blur-md border border-amber-500/50 text-amber-50 px-4 py-3 rounded-lg shadow-2xl flex items-start gap-3 pointer-events-auto animate-slide-down max-w-sm w-[90%]">
-        <div class="text-xl">⚠️</div>
+      <div class="bg-amber-900/95 backdrop-blur-md border border-amber-500/50 text-amber-50 px-4 py-3 rounded-lg shadow-2xl flex items-start gap-3 pointer-events-auto animate-slide-down max-w-sm w-[95%] sm:w-auto">
+        <div class="text-xl mt-0.5">⚠️</div>
         <div class="flex-1 text-sm">
-          <p class="font-bold mb-0.5">Location Access Limited</p>
-          <p class="opacity-90 leading-tight mb-2">{{ game.locationError() }}</p>
-          <button (click)="game.retryLocation()" class="text-xs bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded border border-amber-600/50 transition-colors font-semibold">
+          <p class="font-bold mb-1">Location Services Issue</p>
+          <p class="opacity-90 leading-snug mb-3 text-xs sm:text-sm">{{ game.locationError() }}</p>
+          <button (click)="game.retryLocation()" class="text-xs bg-amber-800 hover:bg-amber-700 text-amber-100 px-3 py-1.5 rounded border border-amber-600/50 transition-colors font-semibold shadow-sm active:scale-95">
              Retry GPS
           </button>
         </div>
-        <button (click)="game.dismissLocationError()" class="text-amber-300 hover:text-white transition-colors p-1 -mt-1 -mr-2">
+        <button (click)="game.dismissLocationError()" class="text-amber-300 hover:text-white transition-colors p-1 -mt-1 -mr-2 rounded-full hover:bg-amber-800/50">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
@@ -222,18 +222,19 @@
          </button>
       </div>
 
-      <!-- Team Button -->
+      <!-- PROFILE Button (Formerly Team) -->
       <button (click)="navTo('team')"
               class="flex flex-col items-center justify-center gap-1 h-full w-full active:bg-white/5 transition-colors group relative">
         <div class="relative p-1">
+           <!-- Changed to Profile/User Icon -->
            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" [class.text-emerald-400]="currentView() === 'team'" [class.text-slate-500]="currentView() !== 'team'">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
            </svg>
            @if(currentView() === 'team') {
              <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-emerald-400 rounded-full blur-[2px]"></div>
            }
         </div>
-        <span class="text-[10px] font-bold uppercase tracking-wider" [class.text-emerald-400]="currentView() === 'team'" [class.text-slate-500]="currentView() !== 'team'">Team</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider" [class.text-emerald-400]="currentView() === 'team'" [class.text-slate-500]="currentView() !== 'team'">Profile</span>
       </button>
     </nav>
   }

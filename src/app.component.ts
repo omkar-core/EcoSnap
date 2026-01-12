@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect, ViewChild, ElementRef } from '@angular/core';
+import { Component, signal, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeminiService, WasteAnalysis } from './services/gemini.service';
 import { GameService, ClaimType, ScanRecord } from './services/game.service';
