@@ -24,55 +24,68 @@ interface PassiveItem {
       
       <!-- Fallback / Error UI (Upload Mode) -->
       @if (cameraError()) {
-        <div class="absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-6 animate-fade-in text-center">
+        <div class="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-fade-in text-center">
+           
            <!-- Close Button -->
-           <button (click)="close.emit()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 transition-colors rounded-full hover:bg-slate-800">
+           <button (click)="close.emit()" class="absolute top-4 right-4 text-white/50 hover:text-white p-2 transition-colors rounded-full hover:bg-white/10 z-50">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
              </svg>
            </button>
 
-           <div class="w-24 h-24 bg-slate-900 rounded-3xl flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(239,68,68,0.2)] border border-slate-800 relative">
-             <span class="text-5xl opacity-50">📷</span>
-             <div class="absolute -bottom-2 -right-2 bg-red-500 rounded-full p-1.5 border-4 border-slate-950">
-               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-               </svg>
+           <!-- Permission/Error Card -->
+           <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-2xl max-w-sm w-full relative overflow-hidden">
+             
+             <!-- Error Icon -->
+             <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                </svg>
              </div>
-           </div>
-           
-           <h3 class="text-white font-bold text-2xl mb-3 tracking-tight">Camera Unavailable</h3>
-           
-           <div class="bg-slate-900/80 rounded-xl p-4 mb-8 border border-slate-800 max-w-sm">
-             <p class="text-slate-300 text-sm leading-relaxed mb-3 font-medium">
+
+             <h3 class="text-slate-900 dark:text-white font-bold text-xl mb-3">
                @if (permissionDenied()) {
-                  Camera access was denied. Please enable it in settings:
+                  Camera Access Needed
                } @else {
-                  We couldn't detect a camera. You can still play by uploading photos.
+                  No Camera Detected
+               }
+             </h3>
+
+             <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
+               @if (permissionDenied()) {
+                  We need camera access to scan waste items instantly. Please enable it in your browser settings.
+               } @else {
+                  We couldn't find a working camera on your device. You can still play by uploading photos.
                }
              </p>
-             
+
+             <!-- Instructions for Permission -->
              @if (permissionDenied()) {
-               <div class="text-xs text-indigo-300 font-mono bg-indigo-950/30 p-2 rounded border border-indigo-500/20">
-                 {{ getInstruction() }}
+               <div class="text-left bg-slate-50 dark:bg-slate-800 rounded-xl p-4 mb-6 border border-slate-200 dark:border-slate-700">
+                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">How to enable:</p>
+                 <ol class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
+                   <li>Tap the 🔒 icon in the URL bar</li>
+                   <li>Select <strong>Permissions</strong> or <strong>Site Settings</strong></li>
+                   <li>Allow <strong>Camera</strong> access</li>
+                   <li>Refresh the page</li>
+                 </ol>
                </div>
              }
+
+             <div class="space-y-3">
+                <button (click)="startCamera()" class="w-full bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 dark:hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-colors">
+                  Try Again
+                </button>
+                
+                <label class="block w-full text-center">
+                   <div class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl cursor-pointer transition-colors shadow-lg shadow-emerald-900/20">
+                     Upload Photo Instead
+                   </div>
+                   <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)">
+                </label>
+             </div>
            </div>
 
-           <div class="w-full max-w-xs space-y-3">
-             <label class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-6 rounded-xl cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-3 shadow-lg shadow-emerald-900/40 group relative overflow-hidden">
-                 <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                 </svg>
-                 Select Photo to Scan
-                 <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)">
-             </label>
-
-             <button (click)="startCamera()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-6 rounded-xl transition-colors border border-slate-700">
-               Retry Camera Access
-             </button>
-           </div>
         </div>
       }
 
@@ -381,18 +394,6 @@ export class CameraViewComponent implements AfterViewInit, OnDestroy {
     if (timeLeft > 0) return `COOLDOWN (${timeLeft}s)`;
     
     return this.hasMovedEnough() ? 'DETECTING...' : 'WAITING FOR MOVEMENT';
-  }
-
-  getInstruction() {
-     if (typeof navigator === 'undefined') return 'Check camera permissions.';
-     const ua = navigator.userAgent.toLowerCase();
-     if (ua.includes('iphone') || ua.includes('ipad')) {
-         return "Go to Settings → Safari → Camera → Allow";
-     } else if (ua.includes('android')) {
-         return "Go to Settings → Site Settings → Camera → Allow";
-     } else {
-         return "Click the lock/camera icon in your browser address bar.";
-     }
   }
 
   private checkPassiveTrigger() {

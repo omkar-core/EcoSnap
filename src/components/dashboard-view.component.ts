@@ -27,8 +27,13 @@ import { AppComponent } from '../app.component';
               </button>
             </div>
             <div class="flex items-center gap-2 text-sm text-slate-400">
-               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-               <span>{{ game.currentAddress() }}</span>
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" 
+                    [class.text-emerald-400]="!game.isFallbackLocation()" 
+                    [class.text-amber-500]="game.isFallbackLocation()" 
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+               </svg>
+               <span>{{ game.currentAddress() }} @if(game.isFallbackLocation()){ <span class="text-amber-500 text-xs uppercase font-bold tracking-wider ml-1">(Default)</span> }</span>
             </div>
           </div>
           <button class="p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors relative">
@@ -75,6 +80,24 @@ import { AppComponent } from '../app.component';
       <!-- Scrollable Content -->
       <div class="px-6 space-y-6">
         
+        <!-- SCENARIO 1: Location Permission Request (Progressive Disclosure) -->
+        @if (game.isFallbackLocation()) {
+          <div class="bg-indigo-900/40 border border-indigo-500/30 rounded-2xl p-5 flex items-start gap-4 animate-fade-in">
+             <div class="text-2xl pt-1">📍</div>
+             <div class="flex-1">
+                <h3 class="text-white font-bold text-sm mb-1">Enable Local Intel?</h3>
+                <p class="text-indigo-200 text-xs mb-4 leading-relaxed">
+                  We are currently using a default sector. To analyze waste patterns in your actual neighborhood, please enable location access.
+                </p>
+                <div class="flex gap-3">
+                   <button (click)="game.requestLocationAccess()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow-lg shadow-indigo-900/40">
+                      Enable Location
+                   </button>
+                </div>
+             </div>
+          </div>
+        }
+
         <!-- Current Status -->
         <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 shadow-xl">
           <div class="flex items-center justify-between mb-4">
@@ -201,7 +224,11 @@ import { AppComponent } from '../app.component';
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .animate-fade-in { animation: fade-in 0.3s ease-out; }
+  `]
 })
 export class DashboardViewComponent implements AfterViewInit, OnDestroy {
   game = inject(GameService);
