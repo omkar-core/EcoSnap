@@ -278,7 +278,7 @@ export class GameService {
     });
   }
 
-  // --- RESTORED METHODS (Missing from v2 update) ---
+  // --- MISSING METHODS RESTORED ---
 
   updateUsername(newName: string) {
     const cleaned = newName.trim().substring(0, 15) || 'Operator';
@@ -339,12 +339,6 @@ export class GameService {
        }
        // We use the user's exact location as the tree location
        plantingLocation = userLoc;
-       
-       // Verify user is actually IN or NEAR the zone they are claiming to plant in
-       // Simple distance check to Zone Center. Let's allow 200m leeway from zone center ID point, 
-       // but strict 50m check is usually relative to "Target". 
-       // For this app, we'll ensure they are physically present at the `plantingLocation` (which we just set to userLoc).
-       // We accept the userLoc as valid.
     }
 
     // Deduct Credits
@@ -471,14 +465,7 @@ export class GameService {
             // Apply penalty: -2 points per day of neglect
             const daysNeglected = daysSinceWater - 7;
             const penalty = Math.min(30, daysNeglected * 2); // Cap penalty logic if needed, but PRD says -2/day
-            // We subtract the daily increment if we run this often, but since we recalc from state...
-            // Actually, we should just decrement current health. 
-            // Better: Health = 100 - (DaysNeglected * 2) + MaintenanceBoosts
-            // For this persistent state model, we'll just decay slightly per tick if neglected.
             newHealth = Math.max(0, tree.health - 2); // Decay 2 points every time this runs (daily check)
-            // Note: This function runs every minute in dev, so we need to be careful.
-            // Let's assume this update runs often but we only apply decay if 24h passed since last decay check.
-            // Simplified for this demo: Just check purely against time.
             if (daysSinceWater > 30) newHealth = 0; // Cap neglect at 30 days -> Dead
             else newHealth = Math.max(0, 100 - (daysNeglected * 2));
          }
