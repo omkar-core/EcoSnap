@@ -3,26 +3,28 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "An application to identify and categorize waste using a camera.",
+  "author": "Omkar Kore",
   "scripts": {
     "dev": "ng serve",
     "build": "ng build",
     "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "rxjs": "^7.8.2",
+    "@angular/build": "^21.0.5",
+    "@angular/cli": "^21.0.5",
+    "@angular/common": "^21.0.8",
+    "@angular/compiler": "^21.0.8",
+    "@angular/compiler-cli": "^21.0.8",
+    "@angular/core": "^21.0.8",
+    "@angular/platform-browser": "^21.0.8",
     "@google/genai": "^1.35.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/common": "^21.0.0",
-    "@angular/build": "^21.0.0",
-    "@angular/cli": "^21.0.0",
-    "@angular/compiler-cli": "^21.0.0",
-    "tailwindcss": "latest"
+    "rxjs": "^7.8.2",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/node": "^25.0.7",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   }
 }
