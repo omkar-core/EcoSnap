@@ -28,7 +28,7 @@ import { GameService, ClaimType } from '../services/game.service';
              
              <!-- Confidence Tag -->
              <div class="absolute top-4 right-14 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-2 border border-slate-600/50 shadow-lg">
-               <div class="w-2 h-2 rounded-full shadow-[0_0_10px_currentColor]" 
+               <div class="w-2 h-2 rounded-full shadow-[0_0/10px_currentColor]"
                     [class.bg-emerald-400]="result().confidence > 80"
                     [class.text-emerald-400]="result().confidence > 80"
                     [class.bg-yellow-400]="result().confidence > 50 && result().confidence <= 80"
@@ -260,7 +260,7 @@ import { GameService, ClaimType } from '../services/game.service';
               </button>
 
               <!-- Cleanup Button (PARTICLE EFFECT) -->
-              <button (click)="handleClaim('cleanup')" class="relative overflow-hidden flex flex-col items-center justify-center py-4 px-4 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 border border-emerald-400 rounded-2xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.3)] group active:scale-95 btn-particle btn-shockwave">
+              <button (click)="handleClaim('cleanup')" class="relative overflow-hidden flex flex-col items-center justify-center py-4 px-4 bg-gradient-to-br from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 border border-emerald-400 rounded-2xl transition-all shadow-[0_4px/20px_rgba(16,185,129,0.3)] group active:scale-95 btn-particle btn-shockwave">
                  
                  <!-- Shimmer Effect -->
                  <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent z-0"></div>

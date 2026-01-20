@@ -100,7 +100,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'active'"
                      [class.text-black]="mode() === 'active'"
                      [class.text-white]="mode() !== 'active'"
-                     [class.hover:bg-white_10]="mode() !== 'active'">
+                     [class.hover:bg-white/10]="mode() !== 'active'">
                 Active
              </button>
              <button (click)="setMode('passive')" 
@@ -108,7 +108,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'passive'"
                      [class.text-black]="mode() === 'passive'"
                      [class.text-white]="mode() !== 'passive'"
-                     [class.hover:bg-white_10]="mode() !== 'passive'">
+                     [class.hover:bg-white/10]="mode() !== 'passive'">
                 Auto Scan
              </button>
           </div>
@@ -163,7 +163,7 @@ interface PassiveItem {
               <div class="absolute inset-0 bg-emerald-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
               
               <!-- Outer Ring -->
-              <div class="w-24 h-24 rounded-full border-[6px] border-white/90 bg-transparent flex items-center justify-center relative z-10 shadow-[0_4px_10px_rgba(0,0,0,0.5)] transition-transform group-active:scale-95">
+              <div class="w-24 h-24 rounded-full border-[6px] border-white/90 bg-transparent flex items-center justify-center relative z-10 shadow-[0_4px/10px_rgba(0,0,0,0.5)] transition-transform group-active:scale-95">
                  <!-- Inner Button -->
                  <div class="w-16 h-16 bg-white rounded-full shadow-inner group-hover:bg-emerald-50 transition-colors duration-200"></div>
               </div>
@@ -186,7 +186,7 @@ interface PassiveItem {
              <!-- Passive Start Screen -->
              <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 z-20 backdrop-blur-[2px]">
                 <div class="text-center max-w-xs space-y-4">
-                  <div class="w-20 h-20 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse shadow-[0_0_30px_rgba(99,102,241,0.5)]">
+                  <div class="w-20 h-20 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse shadow-[0_0/30px_rgba(99,102,241,0.5)]">
                      <span class="text-4xl">🤖</span>
                   </div>
                   <h2 class="text-2xl font-bold text-white">Scout Auto-Mode</h2>
