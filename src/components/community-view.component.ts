@@ -116,11 +116,11 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                       <div class="flex items-center justify-between mb-1">
                                           <h3 class="text-white font-bold text-sm truncate pr-2">{{ zone.name }}</h3>
                                           <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0"
-                                                [class.bg-emerald-500_20]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                                                [class.bg-emerald-500/20]="zone.status === 'Pristine' || zone.status === 'Clean'"
                                                 [class.text-emerald-300]="zone.status === 'Pristine' || zone.status === 'Clean'"
-                                                [class.bg-amber-500_20]="zone.status === 'Moderate'"
+                                                [class.bg-amber-500/20]="zone.status === 'Moderate'"
                                                 [class.text-amber-300]="zone.status === 'Moderate'"
-                                                [class.bg-red-500_20]="zone.status === 'Dirty' || zone.status === 'Critical'"
+                                                [class.bg-red-500/20]="zone.status === 'Dirty' || zone.status === 'Critical'"
                                                 [class.text-red-300]="zone.status === 'Dirty' || zone.status === 'Critical'">
                                               {{ zone.status }}
                                           </span>
@@ -191,12 +191,12 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                     <div class="flex items-start justify-between mb-3">
                                         <div class="flex items-center gap-3">
                                             <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border transition-colors"
-                                                 [class.bg-emerald-900_30]="tree.health > 70"
-                                                 [class.border-emerald-500_20]="tree.health > 70"
-                                                 [class.bg-amber-900_30]="tree.health <= 70 && tree.health > 40"
-                                                 [class.border-amber-500_20]="tree.health <= 70 && tree.health > 40"
-                                                 [class.bg-red-900_30]="tree.health <= 40"
-                                                 [class.border-red-500_20]="tree.health <= 40">
+                                                 [class.bg-emerald-900/30]="tree.health > 70"
+                                                 [class.border-emerald-500/20]="tree.health > 70"
+                                                 [class.bg-amber-900/30]="tree.health <= 70 && tree.health > 40"
+                                                 [class.border-amber-500/20]="tree.health <= 70 && tree.health > 40"
+                                                 [class.bg-red-900/30]="tree.health <= 40"
+                                                 [class.border-red-500/20]="tree.health <= 40">
                                                 {{ GROWTH_CONFIG[tree.stage].icon }}
                                             </div>
                                             <div>
@@ -326,7 +326,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                   @for (species of speciesOptions; track species) {
                                       <button (click)="selectedSpecies.set(species)" 
                                               class="p-2 rounded-lg border text-left transition-all text-xs font-bold"
-                                              [class.bg-emerald-600_20]="selectedSpecies() === species"
+                                              [class.bg-emerald-600/20]="selectedSpecies() === species"
                                               [class.border-emerald-500]="selectedSpecies() === species"
                                               [class.text-white]="selectedSpecies() === species"
                                               [class.bg-slate-800]="selectedSpecies() !== species"

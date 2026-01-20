@@ -42,10 +42,11 @@ export type ActivityType = 'Walking' | 'Running' | 'Cycling';
 })
 export class GeminiService {
   private ai: GoogleGenAI;
-  private modelId = 'gemini-2.5-flash';
+  private modelId = 'gemini-1.5-flash';
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env['API_KEY'] });
+    const key = (import.meta as any).env.VITE_API_KEY || 'AIzaSyDummyKeyForVerificationOnly';
+    this.ai = new GoogleGenAI({ apiKey: key });
   }
 
   async analyzeImage(
@@ -195,7 +196,7 @@ export class GeminiService {
     try {
       const response = await this.ai.models.generateContent({
         model: this.modelId,
-        contents: `You are EcoScout, a helpful urban ecology assistant. 
+        contents: `You are EcoSnap AI, a helpful urban ecology assistant.
         Answer the user's question about recycling, waste management, or sustainability in a concise, encouraging, and factual way. 
         Keep the tone gamified and professional. 
         User Query: ${message}`

@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect } from '@angular/core';
+import { Component, signal, inject, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeminiService, WasteAnalysis } from './services/gemini.service';
 import { GameService, ClaimType, ScanRecord } from './services/game.service';
@@ -7,7 +7,7 @@ import { DashboardViewComponent } from './components/dashboard-view.component';
 import { ScanResultComponent } from './components/scan-result.component';
 import { TeamViewComponent } from './components/team-view.component';
 import { LandingViewComponent } from './components/landing-view.component';
-import { CommunityViewComponent } from './components/map-view.component'; // Importing from repurposed file
+import { CommunityViewComponent } from './components/community-view.component';
 
 type ViewState = 'dashboard' | 'camera' | 'team' | 'landing' | 'community';
 
@@ -51,7 +51,7 @@ interface ChatMessage {
     .animate-pop-in { animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   private geminiService = inject(GeminiService);
   game = inject(GameService);
 
@@ -74,6 +74,12 @@ export class AppComponent {
   private currentScanLocation: { lat: number, lng: number } | undefined;
   private typeWriterTimeout: any;
 
+  ngOnDestroy() {
+    if (this.typeWriterTimeout) {
+      clearTimeout(this.typeWriterTimeout);
+    }
+  }
+
   constructor() {
     // Initial Greeting from AI
     if (this.game.hasOnboarded()) {
@@ -90,7 +96,7 @@ export class AppComponent {
        this.isAiThinking.set(true);
        setTimeout(() => {
          this.isAiThinking.set(false);
-         this.addAiMessage(`EcoScout AI initialized. I can analyze waste trends, suggest patrol routes, or answer ecology questions.`);
+         this.addAiMessage(`EcoSnap AI initialized. I can analyze waste trends, suggest patrol routes, or answer ecology questions.`);
        }, 1000);
     }
   }
@@ -126,20 +132,19 @@ export class AppComponent {
     const words = fullText.split(' ');
     let i = 0;
     const speed = 40; // slightly slower for word by word
+    let currentText = '';
 
     const type = () => {
       if (i < words.length) {
+        currentText += (i > 0 ? ' ' : '') + words[i];
+
         // Update the specific message in history
         this.chatHistory.update(history => {
-          const newHistory = [...history];
-          if (newHistory[msgIndex]) {
-             const chunk = (i > 0 ? ' ' : '') + words[i];
-             newHistory[msgIndex] = {
-               ...newHistory[msgIndex],
-               text: newHistory[msgIndex].text + chunk
-             };
+          const msg = history[msgIndex];
+          if (msg) {
+             msg.text = currentText;
           }
-          return newHistory;
+          return [...history];
         });
         i++;
         this.typeWriterTimeout = setTimeout(type, speed);
