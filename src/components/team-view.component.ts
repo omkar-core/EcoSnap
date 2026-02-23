@@ -89,8 +89,8 @@ import { GameService } from '../services/game.service';
          <div class="space-y-3">
             @for (member of leaderboard(); track member.name; let idx = $index) {
                <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 relative overflow-hidden"
-                    [class.border-emerald-500_50]="member.isUser"
-                    [class.bg-emerald-900_10]="member.isUser">
+                    [class.border-emerald-500/50]="member.isUser"
+                    [class.bg-emerald-900/10]="member.isUser">
                   
                   @if(member.isUser) {
                      <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>

@@ -90,7 +90,7 @@ export class AppComponent {
        this.isAiThinking.set(true);
        setTimeout(() => {
          this.isAiThinking.set(false);
-         this.addAiMessage(`EcoScout AI initialized. I can analyze waste trends, suggest patrol routes, or answer ecology questions.`);
+         this.addAiMessage(`EcoSnap AI initialized. I can analyze waste trends, suggest patrol routes, or answer ecology questions.`);
        }, 1000);
     }
   }

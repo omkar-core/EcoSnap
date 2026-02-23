@@ -100,7 +100,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'active'"
                      [class.text-black]="mode() === 'active'"
                      [class.text-white]="mode() !== 'active'"
-                     [class.hover:bg-white_10]="mode() !== 'active'">
+                     [class.hover:bg-white/10]="mode() !== 'active'">
                 Active
              </button>
              <button (click)="setMode('passive')" 
@@ -108,7 +108,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'passive'"
                      [class.text-black]="mode() === 'passive'"
                      [class.text-white]="mode() !== 'passive'"
-                     [class.hover:bg-white_10]="mode() !== 'passive'">
+                     [class.hover:bg-white/10]="mode() !== 'passive'">
                 Auto Scan
              </button>
           </div>

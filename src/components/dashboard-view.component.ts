@@ -104,11 +104,11 @@ import { AppComponent } from '../app.component';
             <h3 class="text-lg font-semibold text-white">Current Status</h3>
             @if (game.currentZone(); as zone) {
                <span class="px-3 py-1 text-xs font-medium rounded-full uppercase tracking-wider"
-                  [class.bg-emerald-500_20]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                  [class.bg-emerald-500/20]="zone.status === 'Pristine' || zone.status === 'Clean'"
                   [class.text-emerald-300]="zone.status === 'Pristine' || zone.status === 'Clean'"
-                  [class.bg-amber-500_20]="zone.status === 'Moderate'"
+                  [class.bg-amber-500/20]="zone.status === 'Moderate'"
                   [class.text-amber-300]="zone.status === 'Moderate'"
-                  [class.bg-red-500_20]="zone.status === 'Dirty' || zone.status === 'Critical'"
+                  [class.bg-red-500/20]="zone.status === 'Dirty' || zone.status === 'Critical'"
                   [class.text-red-300]="zone.status === 'Dirty' || zone.status === 'Critical'">
                   {{ zone.status }} ({{ zone.health }}%)
                </span>

@@ -41,17 +41,25 @@ export type ActivityType = 'Walking' | 'Running' | 'Cycling';
   providedIn: 'root'
 })
 export class GeminiService {
-  private ai: GoogleGenAI;
+  private ai: GoogleGenAI | null = null;
   private modelId = 'gemini-2.5-flash';
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env['API_KEY'] });
+    const apiKey = import.meta.env.VITE_API_KEY;
+    if (apiKey && apiKey !== 'undefined') {
+      this.ai = new GoogleGenAI({ apiKey });
+    } else {
+      console.warn('Gemini API Key not found. AI features will be disabled.');
+    }
   }
 
   async analyzeImage(
     imageBase64: string, 
     context?: { timestamp?: Date, lat?: number, lng?: number, activity?: ActivityType }
   ): Promise<WasteAnalysis> {
+    if (!this.ai) {
+      throw new Error('Gemini AI is not initialized. Please check your API key.');
+    }
     try {
       // Remove header if present
       const cleanBase64 = imageBase64.replace(/^data:image\/(png|jpg|jpeg|webp);base64,/, '');
@@ -192,10 +200,11 @@ export class GeminiService {
   }
 
   async chat(message: string): Promise<string> {
+    if (!this.ai) return "I'm currently offline (API key missing).";
     try {
       const response = await this.ai.models.generateContent({
         model: this.modelId,
-        contents: `You are EcoScout, a helpful urban ecology assistant. 
+        contents: `You are EcoSnap AI, a helpful urban ecology assistant.
         Answer the user's question about recycling, waste management, or sustainability in a concise, encouraging, and factual way. 
         Keep the tone gamified and professional. 
         User Query: ${message}`

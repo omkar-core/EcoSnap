@@ -25,14 +25,14 @@
   @if (game.systemMessage(); as msg) {
     <div class="absolute top-16 left-0 right-0 z-[100] flex justify-center pt-4 pointer-events-none">
       <div class="backdrop-blur-md border px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 pointer-events-auto animate-slide-down max-w-sm w-[90%]"
-           [class.bg-emerald-900_95]="msg.type === 'success'"
-           [class.border-emerald-500_50]="msg.type === 'success'"
+           [class.bg-emerald-900/95]="msg.type === 'success'"
+           [class.border-emerald-500/50]="msg.type === 'success'"
            [class.text-emerald-50]="msg.type === 'success'"
-           [class.bg-red-900_95]="msg.type === 'error'"
-           [class.border-red-500_50]="msg.type === 'error'"
+           [class.bg-red-900/95]="msg.type === 'error'"
+           [class.border-red-500/50]="msg.type === 'error'"
            [class.text-red-50]="msg.type === 'error'"
-           [class.bg-slate-800_95]="msg.type === 'info'"
-           [class.border-slate-600_50]="msg.type === 'info'"
+           [class.bg-slate-800/95]="msg.type === 'info'"
+           [class.border-slate-600/50]="msg.type === 'info'"
            [class.text-slate-100]="msg.type === 'info'">
         <div class="text-xl">
            @if (msg.type === 'success') { ✅ }
@@ -61,13 +61,48 @@
       </app-dashboard-view>
     }
     @else if (currentView() === 'community') {
-      <app-community-view class="h-full w-full block"></app-community-view>
+      @defer (on idle) {
+        <app-community-view class="h-full w-full block"></app-community-view>
+      } @placeholder {
+        <div class="h-full w-full bg-slate-900 p-6 space-y-6">
+           <div class="h-12 w-48 skeleton"></div>
+           <div class="h-48 w-full skeleton rounded-3xl"></div>
+           <div class="space-y-3">
+              <div class="h-20 w-full skeleton rounded-2xl"></div>
+              <div class="h-20 w-full skeleton rounded-2xl"></div>
+           </div>
+        </div>
+      }
     }
     @else if (currentView() === 'camera') {
-      <app-camera-view (imageCaptured)="handleImageCapture($event)" (close)="navTo('dashboard')" class="h-full w-full block"></app-camera-view>
+      @defer (on immediate) {
+        <app-camera-view (imageCaptured)="handleImageCapture($event)" (close)="navTo('dashboard')" class="h-full w-full block"></app-camera-view>
+      } @placeholder {
+        <div class="h-full w-full bg-black flex items-center justify-center">
+           <div class="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+        </div>
+      }
     }
     @else if (currentView() === 'team') {
-      <app-team-view class="h-full w-full block"></app-team-view>
+      @defer (on idle) {
+        <app-team-view class="h-full w-full block"></app-team-view>
+      } @placeholder {
+        <div class="h-full w-full bg-slate-900 p-6 space-y-6">
+           <div class="flex items-center gap-4">
+              <div class="w-20 h-20 skeleton rounded-2xl"></div>
+              <div class="flex-1 space-y-2">
+                 <div class="h-6 w-32 skeleton"></div>
+                 <div class="h-4 w-24 skeleton"></div>
+              </div>
+           </div>
+           <div class="h-40 w-full skeleton rounded-3xl"></div>
+           <div class="grid grid-cols-3 gap-3">
+              <div class="h-20 skeleton rounded-2xl"></div>
+              <div class="h-20 skeleton rounded-2xl"></div>
+              <div class="h-20 skeleton rounded-2xl"></div>
+           </div>
+        </div>
+      }
     }
   </main>
 
@@ -250,7 +285,7 @@
          </div>
        </div>
        <div class="text-emerald-400 font-black text-xl animate-pulse tracking-tight">ANALYZING ARTIFACT</div>
-       <div class="text-slate-500 text-xs mt-2 max-w-xs text-center font-mono uppercase tracking-widest">Gemini 3 Vision Processing</div>
+       <div class="text-slate-500 text-xs mt-2 max-w-xs text-center font-mono uppercase tracking-widest">Gemini 2.5 Flash Vision</div>
     </div>
   }
 

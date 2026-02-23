@@ -2,10 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>EcoSnap</title>
+  <title>EcoSnap - AI Powered Urban Ecology Game</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="EcoSnap uses Google Gemini AI to turn urban exploration into a planetary rescue mission. Scan waste, earn points, and heal your neighborhood.">
+  <meta name="keywords" content="ecology, recycling, AI, Gemini, sustainability, gamification, waste management">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ecosnap.vercel.app/">
+  <meta property="og:title" content="EcoSnap - AI Powered Urban Ecology Game">
+  <meta property="og:description" content="Scan waste, earn points, and heal your neighborhood with AI.">
+  <meta property="og:image" content="https://ecosnap.vercel.app/og-image.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="EcoSnap - AI Powered Urban Ecology Game">
+  <meta property="twitter:description" content="Scan waste, earn points, and heal your neighborhood with AI.">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
@@ -74,19 +88,6 @@
       box-shadow: 0 2px 0 rgb(15, 23, 42), 0 4px 4px rgba(0,0,0,0.3);
     }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
-    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
-    "@google/genai": "https://esm.sh/@google/genai@^1.35.0?external=rxjs",
-    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.8?external=rxjs",
-    "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs",
-    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.8?external=rxjs",
-    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs"
-  }
-}
-</script>
 </head>
 <body>
   <app-root></app-root>
