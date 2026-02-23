@@ -189,7 +189,7 @@ interface PassiveItem {
                   <div class="w-20 h-20 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse shadow-[0_0_30px_rgba(99,102,241,0.5)]">
                      <span class="text-4xl">🤖</span>
                   </div>
-                  <h2 class="text-2xl font-bold text-white">Scout Auto-Mode</h2>
+                  <h2 class="text-2xl font-bold text-white">EcoScan Auto-Mode</h2>
                   <p class="text-indigo-200 text-sm">
                     AI will automatically detect waste while you move. 
                     <br><span class="text-xs opacity-70">Power-saving: Scans triggered by GPS movement every 10s.</span>
@@ -244,7 +244,7 @@ interface PassiveItem {
              <!-- Passive Summary Modal -->
              <div class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col p-6 animate-fade-in">
                 <h2 class="text-2xl font-bold text-white mb-2">Session Complete</h2>
-                <p class="text-slate-400 text-sm mb-6">Here is what the Scout AI found during your run.</p>
+                <p class="text-slate-400 text-sm mb-6">Here is what the EcoSnap AI found during your run.</p>
 
                 <div class="flex-1 overflow-y-auto space-y-3 mb-6">
                    @if (passiveItems().length === 0) {

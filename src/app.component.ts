@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect } from '@angular/core';
+import { Component, signal, inject, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GeminiService, WasteAnalysis } from './services/gemini.service';
 import { GameService, ClaimType, ScanRecord } from './services/game.service';
@@ -7,9 +7,11 @@ import { DashboardViewComponent } from './components/dashboard-view.component';
 import { ScanResultComponent } from './components/scan-result.component';
 import { TeamViewComponent } from './components/team-view.component';
 import { LandingViewComponent } from './components/landing-view.component';
-import { CommunityViewComponent } from './components/map-view.component'; // Importing from repurposed file
+import { CommunityViewComponent } from './components/map-view.component';
+import { SettingsViewComponent } from './components/settings-view.component';
+import { RewardsViewComponent } from './components/rewards-view.component';
 
-type ViewState = 'dashboard' | 'camera' | 'team' | 'landing' | 'community';
+type ViewState = 'dashboard' | 'camera' | 'team' | 'landing' | 'community' | 'settings' | 'rewards';
 
 interface ChatMessage {
   role: 'user' | 'ai';
@@ -28,7 +30,9 @@ interface ChatMessage {
     ScanResultComponent, 
     TeamViewComponent,
     LandingViewComponent,
-    CommunityViewComponent
+    CommunityViewComponent,
+    SettingsViewComponent,
+    RewardsViewComponent
   ],
   templateUrl: './app.component.html',
   styles: [`
@@ -55,7 +59,11 @@ export class AppComponent {
   private geminiService = inject(GeminiService);
   game = inject(GameService);
 
-  currentView = signal<ViewState>(this.game.hasOnboarded() ? 'dashboard' : 'landing');
+  currentView = computed<ViewState>(() => {
+    const view = this.game.currentView() as ViewState;
+    if (!this.game.hasOnboarded() && view !== 'landing') return 'landing';
+    return view;
+  });
   isProcessing = signal(false);
   scanResult = signal<WasteAnalysis | null>(null);
   capturedImage = signal<string | null>(null);
@@ -227,6 +235,6 @@ export class AppComponent {
   }
 
   navTo(view: ViewState) {
-    this.currentView.set(view);
+    this.game.currentView.set(view);
   }
 }

@@ -142,7 +142,7 @@ export class LandingViewComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.typewrite('EcoSnap', this.displayedTitle, 150);
     setTimeout(() => {
-       this.typewrite('Urban Ecology Protocol v1.0', this.displayedSubtitle, 50);
+       this.typewrite('Urban Ecology Protocol v2.5.0', this.displayedSubtitle, 50);
     }, 1200);
   }
   

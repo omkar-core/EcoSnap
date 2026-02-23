@@ -131,7 +131,8 @@ export class GameService {
     USERNAME: 'swh_username',
     DEVICE_ID: 'swh_device_id',
     ONBOARDED: 'swh_onboarded',
-    LOCATION: 'swh_last_location'
+    LOCATION: 'swh_last_location',
+    CURRENT_VIEW: 'swh_current_view'
   };
 
   // Fallback Location (Mumbai) for when GPS fails/denied
@@ -162,6 +163,7 @@ export class GameService {
   readonly username = signal<string>(this.load(this.KEYS.USERNAME, 'Operator'));
   readonly deviceId = signal<string>(this.load(this.KEYS.DEVICE_ID, this.generateUUID()));
   readonly hasOnboarded = signal<boolean>(this.load(this.KEYS.ONBOARDED, false));
+  readonly currentView = signal<string>(this.load(this.KEYS.CURRENT_VIEW, 'landing'));
 
   // Global Notification States
   readonly locationError = signal<string | null>(null);
@@ -289,6 +291,16 @@ export class GameService {
   completeOnboarding() {
     this.hasOnboarded.set(true);
     this.safeSave(this.KEYS.ONBOARDED, true);
+    if (this.currentView() === 'landing') {
+      this.currentView.set('dashboard');
+    }
+  }
+
+  resetAllData() {
+    if (typeof localStorage !== 'undefined') {
+       localStorage.clear();
+       window.location.reload();
+    }
   }
 
   setNavigationTarget(zone: Zone) {
@@ -497,6 +509,7 @@ export class GameService {
 
   private setupPersistence() {
     effect(() => this.safeSave(this.KEYS.POINTS, this.totalPoints()));
+    effect(() => this.safeSave(this.KEYS.CURRENT_VIEW, this.currentView()));
     effect(() => this.safeSave(this.KEYS.WEIGHT, this.totalWasteWeight()));
     effect(() => this.safeSave(this.KEYS.STREAK, this.streakDays()));
     effect(() => this.safeSave(this.KEYS.HISTORY, this.scanHistory()));
