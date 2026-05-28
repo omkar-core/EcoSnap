@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>EcoSnap</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.5);
+      --bg-base: #0f172a;
+    }
+
+    .bio-theme {
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.7);
+      --bg-base: #09090b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      color: #e2e8f0;
+      transition: background-color 0.5s ease;
+    }
+
+    /* Custom scrollbar for webkit */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    .animate-pulse-fast {
+      animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .5;
+      }
+    }
+
+    /* Animation Utilities */
+    .ease-out-expo {
+      transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .animate-float-slow {
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .animate-float-slower {
+      animation: float 12s ease-in-out infinite reverse;
+    }
+
+    /* --- BUTTON FX --- */
+
+    /* Shockwave Effect for Primary Buttons */
+    @keyframes shockwave {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .btn-shockwave:active {
+      animation: shockwave 0.3s ease-out;
+    }
+
+    /* Particle Burst Simulation (Radial Gradient Expansion) */
+    @keyframes particle-burst {
+      0% {
+        background-position: 50% 50%;
+        background-size: 0% 0%;
+        opacity: 1;
+      }
+
+      100% {
+        background-position: 50% 50%;
+        background-size: 300% 300%;
+        opacity: 0;
+      }
+    }
+
+    .btn-particle {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-particle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .btn-particle:active::after {
+      animation: particle-burst 0.4s ease-out;
+    }
+
+    /* 3D Press Effect */
+    .btn-3d {
+      transition: all 0.1s;
+      transform: translateY(0);
+      box-shadow: 0 6px 0 rgb(15, 23, 42), 0 10px 10px rgba(0, 0, 0, 0.3);
+      /* Dark shadow for depth */
+    }
+
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgb(15, 23, 42), 0 4px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Global Background Particles */
+    .particle-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+      opacity: 0;
+      animation: floatUp var(--duration) linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 0.6;
+      }
+
+      80% {
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: translateY(-20vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* DNA Helix Spinner */
+    .dna-spinner {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dna-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+      animation: dnaSpin 1.4s ease-in-out infinite alternate;
+    }
+
+    .dna-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dna-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    .dna-dot:nth-child(4) {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes dnaSpin {
+      0% {
+        transform: translateY(-15px) scale(0.6);
+        opacity: 0.3;
+        background: #38bdf8;
+      }
+
+      100% {
+        transform: translateY(15px) scale(1.2);
+        opacity: 1;
+        background: var(--primary);
+      }
+    }
+
+    /* Glitch Alert Overlays */
+    .glitch-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(239, 68, 68, 0.1) 0px, transparent 2px);
+      animation: scanline 4s linear infinite, redFlicker 0.15s infinite alternate;
+    }
+
+    @keyframes scanline {
+      0% {
+        background-position: 0 0;
+      }
+
+      100% {
+        background-position: 0 100vh;
+      }
+    }
+
+    @keyframes redFlicker {
+      0% {
+        opacity: 0.9;
+        box-shadow: inset 0 0 100px rgba(220, 38, 38, 0.3);
+      }
+
+      100% {
+        opacity: 0.3;
+        box-shadow: inset 0 0 20px rgba(220, 38, 38, 0);
+      }
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.0.8?external=rxjs",
+    "@angular/core": "https://esm.sh/@angular/core@^21.0.8?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.0.8?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.0.8?external=rxjs"
+  }
+}
+</script>
+</head>
+
+<body>
+  <app-root></app-root>
+</body>
+
+</html>

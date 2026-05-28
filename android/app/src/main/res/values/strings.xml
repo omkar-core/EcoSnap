@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EcoSnap</string>
+    <string name="title_activity_main">EcoSnap</string>
+    <string name="package_name">com.ecosnap.app</string>
+    <string name="custom_url_scheme">com.ecosnap.app</string>
+</resources>

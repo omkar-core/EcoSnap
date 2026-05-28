@@ -1,0 +1,39 @@
+{
+    "project_info": {
+        "project_number": "989655899263",
+        "project_id": "any2pdf-c1eb3",
+        "storage_bucket": "any2pdf-c1eb3.firebasestorage.app"
+    },
+    "client": [
+        {
+            "client_info": {
+                "mobilesdk_app_id": "1:989655899263:android:410ef4d39ca59e94c0b34a",
+                "android_client_info": {
+                    "package_name": "com.ecosnap.app"
+                }
+            },
+            "oauth_client": [
+                {
+                    "client_id": "989655899263-f3qbcrtm5ffjc2rd1jlgi5tva3cs3m86.apps.googleusercontent.com",
+                    "client_type": 3
+                }
+            ],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyCgSjRWA0Skd829hERqk8vQtBLLBUi9Y2s"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": [
+                        {
+                            "client_id": "989655899263-68tpnplmco3uko8h829v891ksc80jvgb.apps.googleusercontent.com",
+                            "client_type": 3
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "configuration_version": "1"
+}

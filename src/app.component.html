@@ -1,0 +1,403 @@
+<div
+  class="h-screen w-screen bg-slate-950 flex flex-col overflow-hidden relative font-inter transition-colors duration-500"
+  [ngClass]="{'bio-theme': game.isBioluminescent()}">
+
+  <!-- Particle Deep Space Background -->
+  <div class="particle-bg">
+    @for (p of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]; track p) {
+    <div class="particle left-[{{p * 5}}vw]" [style.--duration]="(20 + p) + 's'"
+      [style.animation-delay]="-(p * 2) + 's'"></div>
+    }
+  </div>
+
+  @if(game.decayAlertActive()) {
+  <div class="glitch-overlay"></div>
+  <div
+    class="absolute inset-0 z-[60] bg-red-900/40 pointer-events-none flex items-center justify-center mix-blend-color-burn">
+    <h1 class="text-9xl font-black text-red-500 opacity-20 transform -skew-x-12 animate-pulse">CRITICAL</h1>
+  </div>
+  }
+
+  <!-- GPS Error Banner -->
+  @if (game.locationError()) {
+  <div
+    class="absolute top-0 left-0 right-0 z-[100] bg-amber-900 border-b border-amber-500 text-amber-50 px-4 py-1.5 flex justify-center items-center gap-4 text-xs shadow-md animate-slide-down">
+    <div class="flex items-center gap-2">
+      <span>⚠️</span>
+      <span>GPS Disabled - {{ game.locationError() }}</span>
+    </div>
+    <button (click)="game.retryLocation()" class="font-bold hover:text-white underline">Retry</button>
+    <button (click)="game.dismissLocationError()" class="hover:opacity-75 absolute right-4">✖</button>
+  </div>
+  }
+
+  <!-- System Notification Toast (Success/Error) -->
+  @if (game.systemMessage(); as msg) {
+  <div class="absolute top-16 left-0 right-0 z-[100] flex justify-center pt-4 pointer-events-none">
+    <div
+      class="backdrop-blur-md border px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 pointer-events-auto animate-slide-down max-w-sm w-[90%]"
+      [class.bg-emerald-900_95]="msg.type === 'success'" [class.border-emerald-500_50]="msg.type === 'success'"
+      [class.text-emerald-50]="msg.type === 'success'" [class.bg-red-900_95]="msg.type === 'error'"
+      [class.border-red-500_50]="msg.type === 'error'" [class.text-red-50]="msg.type === 'error'"
+      [class.bg-slate-800_95]="msg.type === 'info'" [class.border-slate-600_50]="msg.type === 'info'"
+      [class.text-slate-100]="msg.type === 'info'">
+      <div class="text-xl">
+        @if (msg.type === 'success') { ✅ }
+        @else if (msg.type === 'error') { 🛑 }
+        @else { ℹ️ }
+      </div>
+      <div class="flex-1 text-sm font-medium">
+        {{ msg.text }}
+      </div>
+      <button (click)="game.dismissToast()" class="opacity-70 hover:opacity-100 transition-opacity p-1">
+        ✖
+      </button>
+    </div>
+  </div>
+  }
+
+  <!-- Main Content Area -->
+  <main class="flex-1 overflow-hidden relative">
+    @if (currentView() === 'landing') {
+    @defer (on immediate) {
+    <app-landing-view (finish)="navTo('dashboard')" class="h-full w-full block"></app-landing-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'dashboard') {
+    @defer (on immediate) {
+    <app-dashboard-view class="h-full w-full block" (viewScan)="openHistoryItem($event)">
+    </app-dashboard-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'community') {
+    @defer (on immediate) {
+    <app-community-view class="h-full w-full block"></app-community-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'camera') {
+    @defer (on immediate) {
+    <app-camera-view (imageCaptured)="handleImageCapture($event)" (close)="navTo('dashboard')"
+      class="h-full w-full block"></app-camera-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'team') {
+    @defer (on immediate) {
+    <app-team-view (openSettings)="navTo('settings')" class="h-full w-full block"></app-team-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'splash') {
+    @defer (on immediate) {
+    <app-splash-view (finish)="handleSplashFinish()" class="h-full w-full block"></app-splash-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'settings') {
+    @defer (on immediate) {
+    <app-settings-view (back)="navTo('team')" (nav)="navTo($event)" class="h-full w-full block"></app-settings-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'privacy') {
+    @defer (on immediate) {
+    <app-privacy-policy-view (back)="navTo('settings')" class="h-full w-full block"></app-privacy-policy-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'terms') {
+    @defer (on immediate) {
+    <app-terms-conditions-view (back)="navTo('settings')" class="h-full w-full block"></app-terms-conditions-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'contact') {
+    @defer (on immediate) {
+    <app-contact-support-view (back)="navTo('settings')" class="h-full w-full block"></app-contact-support-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'about') {
+    @defer (on immediate) {
+    <app-about-us-view (back)="navTo('settings')" class="h-full w-full block"></app-about-us-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'info') {
+    @defer (on immediate) {
+    <app-info-view (back)="navTo('settings')" class="h-full w-full block"></app-info-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'faq') {
+    @defer (on immediate) {
+    <app-faq-view (back)="navTo('settings')" class="h-full w-full block"></app-faq-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+    @else if (currentView() === 'account_deletion') {
+    @defer (on immediate) {
+    <app-account-deletion-view (back)="navTo('settings')" class="h-full w-full block"></app-account-deletion-view>
+    } @placeholder { <app-skeleton-loader class="h-full w-full block"></app-skeleton-loader> }
+    }
+  </main>
+
+  <!-- AI Copilot Floating Action Button (Always Accessible) -->
+  @if (showNavBar()) {
+  <div class="fixed bottom-24 right-4 z-50">
+    <button (click)="toggleAi()"
+      class="relative w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-900/50 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 group border border-violet-400/30">
+
+      <!-- Pulse Ring -->
+      <div
+        class="absolute inset-0 rounded-full border border-violet-400 opacity-50 animate-ping group-hover:animate-none">
+      </div>
+
+      <!-- Orb Glow -->
+      <div class="absolute inset-0 bg-violet-400 rounded-full blur-md opacity-30"></div>
+
+      <!-- Icon -->
+      <span class="text-2xl relative z-10 filter drop-shadow">✨</span>
+    </button>
+  </div>
+  }
+
+  <!-- AI Copilot Interface Overlay -->
+  @if (isAiOpen()) {
+  <div
+    class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 animate-fade-in"
+    (click)="toggleAi()">
+    <div (click)="$event.stopPropagation()"
+      class="w-full h-[80vh] sm:h-[600px] sm:w-[400px] bg-slate-900/95 border border-violet-500/30 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-slide-up relative">
+
+      <!-- Background FX -->
+      <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div class="absolute -top-[100px] -right-[100px] w-[300px] h-[300px] bg-violet-900/20 rounded-full blur-[80px]">
+        </div>
+        <div
+          class="absolute bottom-[100px] -left-[100px] w-[200px] h-[200px] bg-indigo-900/20 rounded-full blur-[60px]">
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-violet-500/20 bg-slate-900/50 backdrop-blur">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg">
+            <span class="text-lg">🤖</span>
+          </div>
+          <div>
+            <h3 class="text-white font-bold text-sm">Gemini Copilot</h3>
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[10px] text-emerald-400 uppercase tracking-wider font-bold">Online</span>
+            </div>
+          </div>
+        </div>
+        <button (click)="toggleAi()" class="p-2 hover:bg-white/5 rounded-full text-slate-400 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Chat Area -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        @for (msg of chatHistory(); track msg.timestamp) {
+        <div class="flex gap-3 animate-pop-in" [class.flex-row-reverse]="msg.role === 'user'">
+          @if (msg.role === 'ai') {
+          <div
+            class="w-8 h-8 rounded-full bg-violet-900/50 border border-violet-500/30 flex items-center justify-center shrink-0 text-xs">
+            AI</div>
+          }
+          <div class="max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed shadow-sm"
+            [class.bg-violet-600]="msg.role === 'user'" [class.text-white]="msg.role === 'user'"
+            [class.bg-slate-800]="msg.role === 'ai'" [class.text-slate-200]="msg.role === 'ai'"
+            [class.border]="msg.role === 'ai'" [class.border-slate-700]="msg.role === 'ai'">
+            {{ msg.text }}
+            @if(msg.isTyping) {
+            <span class="inline-block w-1.5 h-4 bg-violet-400 ml-1 animate-pulse align-middle"></span>
+            }
+          </div>
+        </div>
+        }
+        @if (isAiThinking()) {
+        <div class="flex gap-3 animate-pop-in">
+          <div
+            class="w-8 h-8 rounded-full bg-violet-900/50 border border-violet-500/30 flex items-center justify-center shrink-0 text-xs">
+            AI</div>
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-3 flex gap-1 items-center h-10">
+            <div class="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+            <div class="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-4 bg-slate-900/80 border-t border-violet-500/20 backdrop-blur">
+        <div class="relative flex gap-2">
+          <input #aiInput type="text" placeholder="Ask about waste, routes, or ecology..."
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors pr-12"
+            (keyup.enter)="sendToAi(aiInput.value); aiInput.value = ''">
+          <button (click)="sendToAi(aiInput.value); aiInput.value = ''"
+            class="absolute right-2 top-2 bottom-2 aspect-square bg-violet-600 hover:bg-violet-500 text-white rounded-lg flex items-center justify-center transition-colors shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Navigation Bar & System Status (Revolutionary Design) -->
+  @if (showNavBar()) {
+  <!-- System Status Bar -->
+  <div
+    class="fixed bottom-20 left-0 right-0 h-6 bg-black/60 backdrop-blur-md border-t border-b border-white/5 z-40 flex items-center justify-between px-4">
+    <div class="flex items-center gap-4">
+      <span class="text-[10px] font-mono font-bold text-emerald-400 tracking-widest shrink-0">LVL {{ game.userRank() |
+        uppercase }}</span>
+      <div class="h-3 w-16 bg-slate-800 rounded-full overflow-hidden border border-white/10 shrink-0">
+        <div class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400"
+          [style.width]="game.nextRankProgress() + '%'"></div>
+      </div>
+      <span class="text-[9px] font-mono text-slate-400 hidden sm:inline">HP: {{ game.neighborhoodHealth() }}%</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-[10px] font-mono font-bold text-white tracking-widest">{{ game.greenCredits() }} CR</span>
+      <button (click)="toggleSound()" class="text-xs text-slate-400 hover:text-white" title="Toggle Sound">
+        @if(game.isAmbientSoundOn()) { 🔊 } @else { 🔇 }
+      </button>
+    </div>
+  </div>
+
+  <nav
+    class="fixed bottom-0 left-0 right-0 h-20 bg-slate-900/80 backdrop-blur-xl border-t border-slate-800 grid grid-cols-4 items-center z-40 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+
+    <!-- Home Button -->
+    <button (click)="navTo('dashboard')"
+      class="flex flex-col items-center justify-center gap-1 h-full w-full active:bg-white/5 transition-colors group relative">
+      <div class="relative p-1">
+        <svg xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 group-hover:-translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" [class.text-emerald-400]="currentView() === 'dashboard'"
+          [class.text-slate-500]="currentView() !== 'dashboard'">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        @if(currentView() === 'dashboard') {
+        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-emerald-400 rounded-full blur-[2px]"></div>
+        }
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-wider"
+        [class.text-emerald-400]="currentView() === 'dashboard'"
+        [class.text-slate-500]="currentView() !== 'dashboard'">Home</span>
+    </button>
+
+    <!-- Health Button (Formerly Map) -->
+    <button (click)="navTo('community')"
+      class="flex flex-col items-center justify-center gap-1 h-full w-full active:bg-white/5 transition-colors group relative">
+      <div class="relative p-1">
+        <svg xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 group-hover:-translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" [class.text-emerald-400]="currentView() === 'community'"
+          [class.text-slate-500]="currentView() !== 'community'">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        @if(currentView() === 'community') {
+        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-emerald-400 rounded-full blur-[2px]"></div>
+        }
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-wider"
+        [class.text-emerald-400]="currentView() === 'community'"
+        [class.text-slate-500]="currentView() !== 'community'">Health</span>
+    </button>
+
+    <!-- REVOLUTIONARY SCAN BUTTON -->
+    <div class="relative h-full w-full flex items-center justify-center -mt-8 pointer-events-none">
+      <button (click)="navTo('camera')"
+        class="relative pointer-events-auto w-16 h-16 rounded-2xl flex items-center justify-center text-white transform transition-all duration-300 group hover:scale-105 active:scale-95 shadow-[0_10px_30px_rgba(16,185,129,0.4)] btn-3d">
+
+        <!-- Animated Gradient Background -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-2xl animate-gradient-xy">
+        </div>
+
+        <!-- Glass Overlay -->
+        <div class="absolute inset-[2px] bg-black/10 backdrop-blur-[1px] rounded-[14px] border border-white/20"></div>
+
+        <!-- Icon -->
+        <div class="relative z-10">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 drop-shadow-md group-hover:rotate-12 transition-transform duration-300" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+      </button>
+    </div>
+
+    <!-- PROFILE Button (Formerly Team) -->
+    <button (click)="navTo('team')"
+      class="flex flex-col items-center justify-center gap-1 h-full w-full active:bg-white/5 transition-colors group relative">
+      <div class="relative p-1">
+        <!-- Changed to Profile/User Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 group-hover:-translate-y-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" [class.text-emerald-400]="currentView() === 'team'"
+          [class.text-slate-500]="currentView() !== 'team'">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        @if(currentView() === 'team') {
+        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-emerald-400 rounded-full blur-[2px]"></div>
+        }
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-wider" [class.text-emerald-400]="currentView() === 'team'"
+        [class.text-slate-500]="currentView() !== 'team'">Profile</span>
+    </button>
+  </nav>
+  }
+
+  <!-- Loading Overlay -->
+  @if (isProcessing()) {
+  <div
+    class="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center backdrop-blur-md animate-fade-in group">
+    <div class="dna-spinner mb-12 transform scale-150 relative z-10">
+      <div class="dna-dot"></div>
+      <div class="dna-dot"></div>
+      <div class="dna-dot"></div>
+      <div class="dna-dot"></div>
+      <div class="dna-dot"></div>
+    </div>
+
+    <!-- Cyberpunk Ring Background -->
+    <div
+      class="absolute w-64 h-64 border border-emerald-500/10 rounded-full animate-[spin_10s_linear_infinite] group-hover:border-emerald-500/30 transition-colors pointer-events-none">
+    </div>
+    <div
+      class="absolute w-48 h-48 border border-cyan-500/10 rounded-full animate-[spin_15s_linear_infinite_reverse] border-t-cyan-500/30 pointer-events-none">
+    </div>
+
+    <div
+      class="text-emerald-400 font-black text-2xl animate-pulse tracking-widest uppercase filter drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+      DecodING ARTIFACT</div>
+    <div
+      class="text-slate-500 text-[10px] mt-3 max-w-xs text-center font-mono uppercase tracking-[0.3em] bg-slate-900/50 px-4 py-1.5 rounded-full border border-slate-800">
+      Sequencing Waste DNA ...
+    </div>
+  </div>
+  }
+
+  <!-- Result Modal (Used for New Scans AND History View) -->
+  @if (scanResult() && capturedImage()) {
+  <app-scan-result [result]="scanResult()!" [imageSrc]="capturedImage()!" [isHistory]="isHistoryView()"
+    [upcycleClaimed]="currentUpcycleClaimed()" (onClaim)="claimPoints($event)" (claimUpcycle)="handleUpcycleClaim()"
+    (close)="closeModal()">
+  </app-scan-result>
+  }
+
+  <!-- Persistent Eco-Companion (ARIA) -->
+  <app-eco-companion></app-eco-companion>
+
+</div>

@@ -1,0 +1,297 @@
+import { Component, ChangeDetectionStrategy, inject, computed, signal, AfterViewInit, OnDestroy, WritableSignal, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { GameService } from '../services/game.service';
+
+@Component({
+   selector: 'app-team-view',
+   standalone: true,
+   imports: [CommonModule],
+   changeDetection: ChangeDetectionStrategy.OnPush,
+   template: `
+    <div class="h-full overflow-y-auto bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 pb-24 p-6 font-inter">
+      
+      <!-- Header -->
+      <div class="mb-6 pt-6 flex items-center justify-between">
+        <div>
+           <h1 class="text-2xl font-bold text-white mb-1">My Profile</h1>
+           <p class="text-slate-400 text-sm">Track your ecological footprint.</p>
+        </div>
+        <div class="flex items-center gap-3">
+           <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+              <span class="text-xl">👤</span>
+           </div>
+           <button (click)="openSettings.emit()" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+              </svg>
+           </button>
+        </div>
+      </div>
+
+      <!-- Rank Progression Card -->
+      <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-6 mb-6 relative overflow-hidden shadow-lg">
+         <!-- Background Glow -->
+         <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+
+         <div class="flex items-center gap-4 mb-4">
+             <div class="relative">
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-lg shadow-emerald-900/40">
+                   {{ game.username().charAt(0) }}
+                </div>
+                <div class="absolute -bottom-2 -right-2 bg-slate-900 rounded-lg px-2 py-1 border border-slate-700 text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                   Lvl {{ game.userRank() === 'Seedling' ? 1 : (game.userRank() === 'Sprout' ? 2 : (game.userRank() === 'Guardian' ? 3 : (game.userRank() === 'Ranger' ? 4 : 5))) }}
+                </div>
+             </div>
+             <div class="flex-1 min-w-0">
+                <div class="text-white font-bold text-xl truncate">{{ game.username() }}</div>
+                <div class="text-emerald-400 text-sm font-medium mb-1">{{ game.userRank() }}</div>
+                <div class="text-slate-500 text-xs">Device ID: {{ game.deviceId().substring(0, 8) }}...</div>
+             </div>
+         </div>
+
+         <!-- Progress Bar -->
+         <div class="mt-2">
+            <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
+               <span class="text-slate-400">Progress to Next Rank</span>
+               <span class="text-white">{{ game.nextRankProgress() | number:'1.0-0' }}%</span>
+            </div>
+            <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-slate-700/50">
+               <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000 ease-out"
+                    [style.width.%]="game.nextRankProgress()"></div>
+            </div>
+            <div class="flex justify-between mt-2 text-xs">
+               <span class="text-slate-500">{{ game.totalPoints() | number }} XP</span>
+               <span class="text-slate-500">Next Level</span>
+            </div>
+         </div>
+      </div>
+
+      <!-- Lifetime Stats Grid -->
+      <div class="grid grid-cols-3 gap-3 mb-8">
+         <!-- Scans -->
+         <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
+            <div class="text-2xl mb-1">📸</div>
+            <div class="text-white font-bold text-lg">{{ game.scanHistory().length }}</div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold">Scans</div>
+         </div>
+         <!-- Impact -->
+         <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
+            <div class="text-2xl mb-1">⚖️</div>
+            <div class="text-white font-bold text-lg">{{ (game.totalWasteWeight() / 1000) | number:'1.1-1' }}</div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold">Kg Waste</div>
+         </div>
+         <!-- Trees -->
+         <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
+            <div class="text-2xl mb-1">🌳</div>
+            <div class="text-white font-bold text-lg">{{ game.trees().length }}</div>
+            <div class="text-[10px] text-slate-500 uppercase font-bold">Planted</div>
+         </div>
+      </div>
+
+      <!-- Ranger Analytics Dashboard -->
+      <div class="mb-8 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-6 relative overflow-hidden shadow-lg">
+         <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+         <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <span>📊</span> Ranger Analytics
+         </h2>
+
+         <div class="space-y-5 relative z-10">
+            <!-- Efficiency Score -->
+            <div>
+               <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <span>Clearance Efficiency</span>
+                  <span class="text-indigo-400">{{ (game.neighborhoodHealth() * 0.8 + 20).toFixed(0) }}%</span>
+               </div>
+               <div class="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-700/50">
+                  <div class="h-full bg-indigo-500 rounded-full" [style.width]="(game.neighborhoodHealth() * 0.8 + 20) + '%'"></div>
+               </div>
+            </div>
+
+            <!-- Material Breakdown (Mock CSS Chart) -->
+            <div>
+               <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  <span>Waste Material Profile</span>
+               </div>
+               <div class="flex h-4 w-full rounded-full overflow-hidden border border-slate-700/50">
+                  <div class="bg-blue-500 h-full w-[40%]" title="Plastics: 40%"></div>
+                  <div class="bg-emerald-500 h-full w-[30%]" title="Organics: 30%"></div>
+                  <div class="bg-amber-500 h-full w-[20%]" title="Glass/Metal: 20%"></div>
+                  <div class="bg-red-500 h-full w-[10%]" title="Hazmat: 10%"></div>
+               </div>
+               <div class="flex justify-between mt-2 text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 bg-blue-500 rounded-full"></span>Plastic</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span>Bio</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span>Glass</span>
+                  <span class="flex items-center gap-1"><span class="w-2 h-2 bg-red-500 rounded-full"></span>Haz</span>
+               </div>
+            </div>
+            
+            <button class="w-full mt-2 py-3 bg-white/5 hover:bg-white/10 text-xs font-bold uppercase tracking-widest text-indigo-300 rounded-xl border border-white/5 transition-all flex items-center justify-center gap-2">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+               Share Report Card
+            </button>
+         </div>
+      </div>
+
+      <!-- Operation Badges -->
+      <div class="mb-8">
+         <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+               <span>🎖️</span> Honors & Badges
+            </h2>
+            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-900/30 px-2 py-1 rounded-full border border-emerald-500/30">
+               {{ earnedBadgesCount() }}/12 EARNED
+            </span>
+         </div>
+         
+         <!-- Badges Grid -->
+         <div class="grid grid-cols-4 gap-3">
+            @for (badge of game.userBadges(); track badge.id) {
+               <div class="relative group cursor-pointer aspect-square rounded-2xl bg-slate-800/50 border flex flex-col items-center justify-center transition-all duration-500"
+                    [class.border-emerald-500]="!!badge.unlockedAt"
+                    [class.border-slate-700]="!badge.unlockedAt"
+                    [class.opacity-40]="!badge.unlockedAt"
+                    [class.hover:opacity-80]="!badge.unlockedAt"
+                    [class.hover:scale-105]="!!badge.unlockedAt"
+                    [class.shadow-[0_0_15px_rgba(16,185,129,0.3)]]="!!badge.unlockedAt && badge.tier === 'Gold'"
+                    [class.shadow-[0_0_10px_rgba(255,255,255,0.2)]]="!!badge.unlockedAt && badge.tier === 'Silver'">
+                  
+                  @if (badge.unlockedAt) {
+                     <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none"></div>
+                  }
+                  
+                  <span class="text-3xl filter drop-shadow-md relative z-10 transition-transform duration-300 group-hover:scale-110" 
+                        [class.grayscale]="!badge.unlockedAt">{{ badge.icon }}</span>
+                  
+                  <!-- Tooltip -->
+                  <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-slate-900 border border-slate-700 text-white text-xs p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
+                     <div class="font-bold uppercase tracking-wider mb-1" [class.text-emerald-400]="!!badge.unlockedAt">{{ badge.name }}</div>
+                     <div class="text-slate-400 mb-2 leading-tight">{{ badge.description }}</div>
+                     <div class="text-[9px] font-mono text-slate-500">TIER: <span class="uppercase font-bold" [class.text-yellow-400]="badge.tier==='Gold'" [class.text-slate-300]="badge.tier==='Silver'" [class.text-amber-600]="badge.tier==='Bronze'">{{ badge.tier }}</span></div>
+                  </div>
+               </div>
+            }
+         </div>
+      </div>
+
+      <!-- Leaderboard List -->
+      <div class="mb-8">
+         <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <span>🏆</span> Sector Rankings
+         </h2>
+         <div class="space-y-3">
+            @for (member of leaderboard(); track member.name; let idx = $index) {
+               <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 relative overflow-hidden"
+                    [class.border-emerald-500_50]="member.isUser"
+                    [class.bg-emerald-900_10]="member.isUser">
+                  
+                  @if(member.isUser) {
+                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+                  }
+
+                  <div class="relative">
+                     <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-lg text-sm"
+                          [class.from-amber-500]="idx === 0" [class.to-orange-500]="idx === 0"
+                          [class.from-slate-400]="idx === 1" [class.to-slate-500]="idx === 1"
+                          [class.from-emerald-500]="idx > 1" [class.to-teal-500]="idx > 1"
+                          [class.bg-gradient-to-br]="true">
+                        {{ member.name.charAt(0) }}
+                     </div>
+                     <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-slate-900 rounded-full flex items-center justify-center text-[9px] font-bold text-white border border-slate-700">
+                        {{ idx + 1 }}
+                     </div>
+                  </div>
+                  <div class="flex-1">
+                     <div class="text-white font-semibold text-sm flex items-center gap-2">
+                        {{ member.name }}
+                        @if(member.isUser) { <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded uppercase">You</span> }
+                     </div>
+                     <div class="text-xs text-slate-400">{{ member.title }}</div>
+                  </div>
+                  <div class="text-right">
+                     <div class="text-sm font-bold text-white">{{ member.points | number }}</div>
+                     <div class="text-[9px] text-slate-500 uppercase">XP</div>
+                  </div>
+               </div>
+            }
+         </div>
+      </div>
+
+      <!-- About Section -->
+      <div class="bg-gradient-to-br from-slate-800/40 to-slate-900/40 border border-slate-700/50 rounded-3xl p-6 relative overflow-hidden group mb-6">
+         <!-- Background Glow -->
+         <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-opacity group-hover:opacity-100 opacity-50"></div>
+         
+         <div class="relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+               <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-xl shadow-inner border border-slate-700">
+                  🌿
+               </div>
+               <div>
+                  <h2 class="text-lg font-bold text-white">About EcoSnap</h2>
+                  <p class="text-[10px] text-slate-400 font-mono uppercase tracking-widest">System Info</p>
+               </div>
+            </div>
+            
+            <p class="text-slate-300 text-sm leading-relaxed mb-6 font-light min-h-[4rem]">
+               {{ displayedAbout() }}<span class="animate-pulse text-emerald-400">|</span>
+            </p>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+               <div class="bg-slate-950/50 rounded-xl p-3 border border-slate-800">
+                  <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Version</div>
+                  <div class="text-white font-mono text-sm">2.5.0 (Alpha)</div>
+               </div>
+               <div class="bg-slate-950/50 rounded-xl p-3 border border-slate-800">
+                  <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">AI Model</div>
+                  <div class="text-indigo-400 font-mono text-sm font-bold">Gemini 2.5</div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+    </div>
+  `,
+   styles: []
+})
+export class TeamViewComponent implements AfterViewInit, OnDestroy {
+   game = inject(GameService);
+   displayedAbout = signal('');
+   openSettings = output<void>();
+
+   private timeouts: any[] = [];
+   private readonly aboutText = "EcoSnap turns urban exploration into a planetary rescue mission. Powered by Google Gemini AI to analyze, track, and heal your sector.";
+
+   // Only real data from game service
+   leaderboard = computed(() => {
+      return this.game.getLeaderboard().sort((a, b) => b.points - a.points);
+   });
+
+   earnedBadgesCount = computed(() => {
+      return this.game.userBadges().filter(b => !!b.unlockedAt).length;
+   });
+
+   ngAfterViewInit() {
+      this.typewrite(this.aboutText, this.displayedAbout, 20);
+   }
+
+   ngOnDestroy() {
+      this.timeouts.forEach(clearTimeout);
+   }
+
+   private typewrite(text: string, signalSetter: WritableSignal<string>, delay: number) {
+      if (!text) return;
+      const words = text.split(' ');
+      let i = 0;
+      const animate = () => {
+         if (i < words.length) {
+            const chunk = (i > 0 ? ' ' : '') + words[i];
+            signalSetter.update(s => s + chunk);
+            i++;
+            this.timeouts.push(setTimeout(animate, delay));
+         }
+      };
+      animate();
+   }
+}
