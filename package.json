@@ -21,7 +21,6 @@
     "@angular/core": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
     "@capacitor-firebase/analytics": "^8.1.0",
-    "@capacitor-firebase/authentication": "^8.1.0",
     "@capacitor-firebase/firestore": "^8.1.0",
     "@capacitor-firebase/storage": "^8.1.0",
     "@capacitor/android": "^8.1.0",

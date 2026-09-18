@@ -23,10 +23,22 @@ export class StorageService {
             const result = await uploadBytes(storageRef, file);
             return await getDownloadURL(result.ref);
         } else {
-            // NOTE: For Native file path requires translating a local device URI to bytes, 
-            // or directly uploading the uri (if supported by native capacitor plugins)
-            // Usually requires read permissions depending on iOS/Android implementation
-            throw new Error("uploadFile Native Implementation Requires Base64 or URI Upload Method");
+            // For native, convert the device URI to a blob via fetch and reuse uploadBase64
+            const response = await fetch(file.path || file.webkitRelativePath, { headers: { Range: "bytes=0-" } });
+            const blob = await response.blob();
+            return await this.uploadBase64(path, await this.blobToBase64(blob), file.type);
+        }
+    }
+
+    async uploadUri(path: string, fileUri: string, contentType: string = 'image/jpeg') {
+        if (this.platform.isWeb()) {
+            // On web a URI is usually an object URL or blob URL
+            const response = await fetch(fileUri);
+            const blob = await response.blob();
+            return await this.uploadBase64(path, await this.blobToBase64(blob), contentType);
+        } else {
+            const result = await FirebaseStorage.uploadFile({ path, fileUri, contentType });
+            return result.downloadUrl;
         }
     }
 
@@ -54,5 +66,18 @@ export class StorageService {
             const result = await FirebaseStorage.getDownloadUrl({ path });
             return result.downloadUrl;
         }
+    }
+
+    private blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = reader.result as string;
+                const comma = result.indexOf(',');
+                resolve(comma >= 0 ? result.slice(comma + 1) : result);
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(blob);
+        });
     }
 }

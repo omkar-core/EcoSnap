@@ -26,14 +26,16 @@ Current status reflects the codebase as pulled from `main` (2026).
 ## Phase 5 — Gamification & Polish ✅
 - Ranks, badges, mock leaderboard, live events, hotspots, eco wave, bioluminescent theme, ambient sound, EcoScout chat + ARIA briefings.
 
-## Phase 6 — Auth, Privacy & Compliance 🟡
-- Firebase Auth (email/Google) wired via `AuthService`.
-- Privacy policy, terms, account deletion, contact, about, FAQ views present.
-- **Remaining:** wire views into active auth flow / account state (views largely static today).
+## Phase 6 — Auth, Privacy & Compliance ✅
+- Firebase Auth (email/Google) wired via `AuthService` with reactive `user` signal + session `init()`.
+- Settings view has working sign in / create account / Google / log out UI for both web and native (`@capacitor-firebase/authentication`).
+- On sign-in, profile + scan history sync to Firestore (`users/{uid}`, `users/{uid}/scans/{scanId}`) and `user` id is set in analytics; profile pull restores username and points.
+- Privacy policy, terms, account deletion, contact, about, FAQ views present and navigable.
+- Accessibility: dialogs expose `role="dialog"`/`aria-modal`, icon-only buttons labeled, `Escape` closes scan-result / AI copilot / planting modal, `prefers-reduced-motion` support added.
 
 ## Phase 7 — Persistence & Sync 🔲 (Future)
-- Game state currently in `localStorage`; migrate to server/Firestore sync.
-- Real (non-mock) leaderboards and community scans.
+- Game state mostly in `localStorage`; only profile/points/scans are pushed on sign-in (see Phase 6).
+- Remaining: full Firestore game-state sync (trees, zones, badges), real (non-mock) leaderboards and community scans.
 
 ## Phase 8 — Deployment 🟡
 - Build (`ng build`) → `dist/`; Capacitor sync for native; server hosting.

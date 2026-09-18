@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../services/game.service';
 
@@ -394,14 +394,14 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
 
     <!-- PLANTING MODAL -->
     @if (isPlantingOpen() && targetZone()) {
-        <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Reforestation protocol" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
             <div class="bg-slate-900 w-full sm:w-[450px] rounded-t-3xl sm:rounded-3xl border border-slate-700 shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
                 
                 <!-- Modal Header -->
                 <div class="p-6 pb-4 bg-slate-800/50 border-b border-slate-700 shrink-0">
                     <div class="flex items-center justify-between mb-1">
                         <h2 class="text-xl font-bold text-white">Reforestation Protocol</h2>
-                        <button (click)="closePlanting()" class="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
+                        <button (click)="closePlanting()" aria-label="Close planting dialog" class="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                         </button>
                     </div>
@@ -587,6 +587,11 @@ export class CommunityViewComponent {
     quantity = signal<number>(1);
 
     speciesOptions = Object.keys(this.game.SPECIES_RATES);
+
+    @HostListener('document:keydown.escape')
+    handleEscape() {
+        if (this.isPlantingOpen()) this.closePlanting();
+    }
 
     // Computed Trees
     myTrees = computed(() => {

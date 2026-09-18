@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect, computed } from '@angular/core';
+import { Component, signal, inject, effect, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirebaseManagerService } from './services/firebase.manager';
 import { GeminiService, WasteAnalysis } from './services/gemini.service';
@@ -110,6 +110,12 @@ export class AppComponent {
         this.addAiMessage(`Welcome back, Ranger ${this.game.username()}. Systems online. How can I assist your patrol today?`);
       }, 2000);
     }
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape() {
+    if (this.isAiOpen()) this.isAiOpen.set(false);
+    if (this.scanResult()) this.closeModal();
   }
 
   toggleAi() {

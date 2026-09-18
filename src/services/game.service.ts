@@ -984,12 +984,20 @@ export class GameService {
   }
 
   checkBadges(scan: ScanRecord) {
+    // First scan
+    this.unlockBadge('FIRST_SCAN');
     // Check streak
     if (this.streakDays() >= 7) this.unlockBadge('STREAK_7');
     // Rare waste
     if (scan.wasteType.toLowerCase().includes('electronic') || scan.wasteType.toLowerCase().includes('battery')) {
       this.unlockBadge('E_WASTE_HUNTER');
     }
+    // 10 Trees alive for 7 days
+    const yesterday = Date.now() - (1000 * 3600 * 24 * 7);
+    const aliveTrees = this.trees().filter(t =>
+      t.health > 0 && new Date(t.plantedAt).getTime() <= yesterday
+    );
+    if (aliveTrees.length >= 10) this.unlockBadge('TREE_LORD');
   }
 
   private unlockBadge(badgeId: string) {
@@ -1012,7 +1020,7 @@ export class GameService {
       { id: 'STREAK_7', name: 'Dedicated Ranger', description: '7 Day Scan Streak', icon: '🔥', tier: 'Bronze', progress: 0 },
       { id: 'E_WASTE_HUNTER', name: 'Cyber Sweeper', description: 'Scan E-Waste', icon: '🔋', tier: 'Silver', progress: 0 },
       { id: 'TREE_LORD', name: 'Canopy Architect', description: '10 Trees Alive for 7 Days', icon: '🌲', tier: 'Gold', progress: 0 },
-      { id: 'FIRST_SCAN', name: 'Initiation', description: 'Complete First Scan', icon: '📸', tier: 'Bronze', progress: 100, unlockedAt: new Date() }
+      { id: 'FIRST_SCAN', name: 'Initiation', description: 'Complete First Scan', icon: '📸', tier: 'Bronze', progress: 0 }
     ];
     return this.load('swh_badges', defaultBadges);
   }

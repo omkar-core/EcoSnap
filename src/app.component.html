@@ -27,7 +27,7 @@
       <span>GPS Disabled - {{ game.locationError() }}</span>
     </div>
     <button (click)="game.retryLocation()" class="font-bold hover:text-white underline">Retry</button>
-    <button (click)="game.dismissLocationError()" class="hover:opacity-75 absolute right-4">✖</button>
+    <button (click)="game.dismissLocationError()" aria-label="Dismiss GPS error" class="hover:opacity-75 absolute right-4">✖</button>
   </div>
   }
 
@@ -49,7 +49,7 @@
       <div class="flex-1 text-sm font-medium">
         {{ msg.text }}
       </div>
-      <button (click)="game.dismissToast()" class="opacity-70 hover:opacity-100 transition-opacity p-1">
+      <button (click)="game.dismissToast()" aria-label="Dismiss notification" class="opacity-70 hover:opacity-100 transition-opacity p-1">
         ✖
       </button>
     </div>
@@ -135,7 +135,7 @@
   <!-- AI Copilot Floating Action Button (Always Accessible) -->
   @if (showNavBar()) {
   <div class="fixed bottom-24 right-4 z-50">
-    <button (click)="toggleAi()"
+    <button (click)="toggleAi()" aria-label="Open AI copilot"
       class="relative w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-900/50 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 group border border-violet-400/30">
 
       <!-- Pulse Ring -->
@@ -154,7 +154,7 @@
 
   <!-- AI Copilot Interface Overlay -->
   @if (isAiOpen()) {
-  <div
+  <div role="dialog" aria-modal="true" aria-label="Gemini Copilot"
     class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 animate-fade-in"
     (click)="toggleAi()">
     <div (click)="$event.stopPropagation()"
@@ -184,7 +184,7 @@
             </div>
           </div>
         </div>
-        <button (click)="toggleAi()" class="p-2 hover:bg-white/5 rounded-full text-slate-400 transition-colors">
+        <button (click)="toggleAi()" aria-label="Close AI copilot" class="p-2 hover:bg-white/5 rounded-full text-slate-400 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -231,7 +231,7 @@
           <input #aiInput type="text" placeholder="Ask about waste, routes, or ecology..."
             class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors pr-12"
             (keyup.enter)="sendToAi(aiInput.value); aiInput.value = ''">
-          <button (click)="sendToAi(aiInput.value); aiInput.value = ''"
+          <button (click)="sendToAi(aiInput.value); aiInput.value = ''" aria-label="Send message"
             class="absolute right-2 top-2 bottom-2 aspect-square bg-violet-600 hover:bg-violet-500 text-white rounded-lg flex items-center justify-center transition-colors shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -261,7 +261,7 @@
     </div>
     <div class="flex items-center gap-3">
       <span class="text-[10px] font-mono font-bold text-white tracking-widest">{{ game.greenCredits() }} CR</span>
-      <button (click)="toggleSound()" class="text-xs text-slate-400 hover:text-white" title="Toggle Sound">
+      <button (click)="toggleSound()" aria-label="Toggle ambient sound" class="text-xs text-slate-400 hover:text-white" title="Toggle Sound">
         @if(game.isAmbientSoundOn()) { 🔊 } @else { 🔇 }
       </button>
     </div>

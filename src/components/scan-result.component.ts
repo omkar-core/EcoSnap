@@ -9,11 +9,11 @@ import { GameService, ClaimType } from '../services/game.service';
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center animate-fade-in p-0 sm:p-4">
+    <div role="dialog" aria-modal="true" aria-label="Scan result" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center animate-fade-in p-0 sm:p-4">
       <div class="bg-slate-900 w-full sm:w-[500px] max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-3xl border border-slate-700 shadow-2xl animate-slide-up overflow-hidden relative">
         
         <!-- Close Button (Always visible) -->
-        <button (click)="close.emit()" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full backdrop-blur-md border border-white/10 transition-colors">
+        <button (click)="close.emit()" aria-label="Close scan result" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full backdrop-blur-md border border-white/10 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
@@ -23,7 +23,7 @@ import { GameService, ClaimType } from '../services/game.service';
         <div class="overflow-y-auto flex-1">
           <!-- Header Image & Badge -->
           <div class="relative h-64 bg-slate-800 group">
-             <img [src]="imageSrc()" class="w-full h-full object-cover opacity-90 transition-opacity group-hover:opacity-100">
+             <img [src]="imageSrc()" [alt]="'Photograph of ' + result().wasteType" class="w-full h-full object-cover opacity-90 transition-opacity group-hover:opacity-100">
              <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
              
              <!-- Confidence Tag -->
@@ -218,7 +218,7 @@ import { GameService, ClaimType } from '../services/game.service';
                     </div>
                     
                     <!-- Share Button -->
-                    <button (click)="shareRecipe(recipe)" class="group flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-indigo-200 transition-all hover:bg-indigo-500 hover:text-white active:scale-95" title="Share Recipe">
+                    <button (click)="shareRecipe(recipe)" aria-label="Share recipe" class="group flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-indigo-200 transition-all hover:bg-indigo-500 hover:text-white active:scale-95" title="Share Recipe">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     </button>
                   </div>

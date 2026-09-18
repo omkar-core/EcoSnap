@@ -31,11 +31,12 @@ This file captures the operating context for AI agents and contributors working 
 
 ## Current Gaps / Known Notes
 - No automated tests are configured (server `test` script is a stub).
-- Game state is `localStorage`-only (no server sync yet); leaderboard is mock.
-- Auth services exist but legal/info views are largely static (not wired to live account state).
+- Game state is `localStorage`-first; on sign-in, profile + scan history are pushed to Firestore (cloud restore), but trees/zones/badges do not sync yet; leaderboard is mock.
+- Auth is wired into the Settings view (sign in / create account / Google / log out) and `AuthService` exposes a reactive `user` signal used by the app for account state.
+- `storage.service` now supports native URI uploads via `uploadUri()` (`FirebaseStorage.uploadFile({ path, fileUri, contentType })`) and native `File` objects via fetch→base64 on `uploadFile()`. No interim temp-file write is required.
 - `server/.env` is git-ignored; use `server/.env.example`.
 - Firebase project config in `environment.ts`/`environment.prod.ts` references a `any2pdf-c1eb3` project (legacy config; replace for production).
-- `storage.service` native uploads are stubbed (throw) — native upload needs URI/base64 file handling.
+- SEO meta (description, Open Graph, Twitter, theme-color, canonical, JSON-LD) added in `index.html`; `og:image`/`canonical` point at `https://ecosnap.app/` (update once the domain is finalized).
 
 ## Environment (dev machine)
 - Windows, PowerShell. Working dir: `D:\Webapp\Working_webapps\Ecosnap`.

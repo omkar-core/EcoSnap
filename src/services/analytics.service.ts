@@ -43,7 +43,7 @@ export class AnalyticsService {
             // FirebaseAnalytics native plugin might require setting properties in string formats
             for (const key of Object.keys(properties)) {
                 await FirebaseAnalytics.setUserProperty({
-                    name: key,
+                    key,
                     value: properties[key]?.toString() || ''
                 });
             }

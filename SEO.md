@@ -5,17 +5,18 @@ EcoSnap is primarily a **hybrid mobile app** (Capacitor) and an authenticated we
 
 ## Current baseline
 - Single `index.html` with:
-  - `<title>EcoSnap</title>`
+  - `<title>EcoSnap: Smart Waste Hunt</title>`
   - `<meta name="viewport" ...>` (mobile)
   - `<html lang="en">`
   - Google Fonts preconnect/stylesheet.
-- **No** `description`, `og:*`, `theme-color`, canonical, or structured-data meta tags yet.
+  - `<meta name="description">`, `<meta name="author">`, `<meta name="theme-color">` (#0f172a).
+  - Open Graph tags (`og:title`, `og:description`, `og:type`, `og:url`, `og:image`, `og:site_name`).
+  - Twitter Card tags (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`).
+  - Canonical URL → `https://ecosnap.app/`.
+  - JSON-LD structured data (`VideoGame` schema with offers/genre/playMode/about).
+- **Remaining:** host a real `assets/og-cover.png` at the canonical origin; consider SSR/pre-render if public landing SEO becomes a goal.
 
 ## Recommended additions (web)
-- `<meta name="description">` — e.g., "EcoSnap: Scan waste, earn XP, and plant trees to restore your neighborhood."
-- Open Graph / Twitter Card tags (`og:title`, `og:description`, `og:image`, `og:type`).
-- `<meta name="theme-color">` matching `--bg-base` / themed primary.
-- Canonical URL for the hosted homepage.
 - Prefer render of meaningful content; if needed, add Angular Universal/SSR or pre-render the landing view for bot crawling (higher effort — only if public landing SEO is a goal).
 
 ## Guidelines

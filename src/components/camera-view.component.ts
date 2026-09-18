@@ -27,7 +27,7 @@ interface PassiveItem {
         <div class="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-fade-in text-center">
            
            <!-- Close Button -->
-           <button (click)="close.emit()" class="absolute top-4 right-4 text-white/50 hover:text-white p-2 transition-colors rounded-full hover:bg-white/10 z-50">
+           <button (click)="close.emit()" aria-label="Close camera" class="absolute top-4 right-4 text-white/50 hover:text-white p-2 transition-colors rounded-full hover:bg-white/10 z-50">
              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
              </svg>
@@ -93,7 +93,7 @@ interface PassiveItem {
       @if (!cameraError()) {
         
         <!-- Close / Back Button -->
-        <button (click)="close.emit()" class="absolute top-6 right-6 z-40 bg-black/40 backdrop-blur-md rounded-full p-2 border border-white/10 flex shadow-lg hover:bg-white/10 transition-colors">
+        <button (click)="close.emit()" aria-label="Back" class="absolute top-6 right-6 z-40 bg-black/40 backdrop-blur-md rounded-full p-2 border border-white/10 flex shadow-lg hover:bg-white/10 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -158,7 +158,7 @@ interface PassiveItem {
           <div class="absolute bottom-24 w-full flex justify-center items-center z-20 gap-10">
             
             <!-- Switch Camera -->
-            <button (click)="switchCamera()" class="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white/10 transition border border-white/10 shadow-lg active:scale-90">
+            <button (click)="switchCamera()" aria-label="Switch camera" class="p-4 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-white/10 transition border border-white/10 shadow-lg active:scale-90">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>

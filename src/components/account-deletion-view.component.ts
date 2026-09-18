@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth.service';
 import { GameService } from '../services/game.service';
 
 @Component({
@@ -17,7 +16,7 @@ import { GameService } from '../services/game.service';
             <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
           </svg>
         </button>
-        <h1 class="text-xl font-bold text-red-500">Delete Account</h1>
+        <h1 class="text-xl font-bold text-red-500">Reset All Data</h1>
       </div>
 
       <!-- Content -->
@@ -29,7 +28,7 @@ import { GameService } from '../services/game.service';
             </div>
             <h2 class="text-white font-bold text-lg mb-2">Warning: Permanent Action</h2>
             <p class="text-red-200/70 text-sm leading-relaxed mb-4">
-               Deleting your account will permanently erase all your scan history, points, and leaderboard standings. 
+               Resetting will permanently erase all local scan history, points, badges, and leaderboard standings on this device.
                This action <strong class="text-red-400">cannot be undone</strong>.
             </p>
          </div>
@@ -43,23 +42,23 @@ import { GameService } from '../services/game.service';
                class="mt-1 w-5 h-5 rounded bg-slate-800 border-slate-700 text-red-500 focus:ring-red-500 focus:ring-offset-slate-900"
             >
             <span class="text-sm text-slate-300 leading-relaxed select-none">
-               I understand that deleting my account is irreversible and all my data will be permanently wiped.
+               I understand that resetting is irreversible and all my local data will be permanently wiped.
             </span>
          </label>
 
-         <!-- Delete Action -->
+         <!-- Reset Action -->
          <button 
-            [disabled]="!confirmed() || isDeleting()"
-            (click)="deleteAccount()"
+            [disabled]="!confirmed() || isResetting()"
+            (click)="resetAllData()"
             class="w-full py-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            [class.bg-red-600]="confirmed() && !isDeleting()"
-            [class.hover.bg-red-500]="confirmed() && !isDeleting()"
-            [class.text-white]="confirmed() && !isDeleting()"
-            [class.bg-slate-800]="!confirmed() || isDeleting()"
-            [class.text-slate-500]="!confirmed() || isDeleting()"
+            [class.bg-red-600]="confirmed() && !isResetting()"
+            [class.hover.bg-red-500]="confirmed() && !isResetting()"
+            [class.text-white]="confirmed() && !isResetting()"
+            [class.bg-slate-800]="!confirmed() || isResetting()"
+            [class.text-slate-500]="!confirmed() || isResetting()"
          >
-            <span *ngIf="isDeleting()" class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
-            {{ isDeleting() ? 'Deleting...' : 'Permanently Delete Account' }}
+            <span *ngIf="isResetting()" class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
+            {{ isResetting() ? 'Resetting...' : 'Permanently Reset All Data' }}
          </button>
       </div>
     </div>
@@ -70,30 +69,23 @@ export class AccountDeletionViewComponent {
     back = output<void>();
 
     confirmed = signal(false);
-    isDeleting = signal(false);
+    isResetting = signal(false);
 
-    private authService = inject(AuthService);
     private gameService = inject(GameService);
 
     toggleConfirm() {
         this.confirmed.update(v => !v);
     }
 
-    async deleteAccount() {
-        if (this.confirmed() && !this.isDeleting()) {
-            this.isDeleting.set(true);
+    async resetAllData() {
+        if (this.confirmed() && !this.isResetting()) {
+            this.isResetting.set(true);
             try {
-                try {
-                    await this.authService.deleteAccount();
-                } catch(e) {
-                    console.warn("Auth deletion failed or user not signed in", e);
-                }
-                
                 this.gameService.clearAllData();
                 window.location.reload();
             } catch (error) {
-                console.error("Account deletion failed", error);
-                this.isDeleting.set(false);
+                console.error("Failed to reset data", error);
+                this.isResetting.set(false);
             }
         }
     }

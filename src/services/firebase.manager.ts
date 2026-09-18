@@ -3,7 +3,6 @@ import { PlatformService } from './platform.service';
 import { environment } from '../environments/environment';
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAnalytics, Analytics } from 'firebase/analytics';
-import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
@@ -15,7 +14,6 @@ export class FirebaseManagerService {
 
     public app: FirebaseApp | null = null;
     public analytics: Analytics | null = null;
-    public auth: Auth | null = null;
     public firestore: Firestore | null = null;
     public storage: FirebaseStorage | null = null;
 
@@ -28,7 +26,6 @@ export class FirebaseManagerService {
             try {
                 // Initialize Firebase Web SDK ONLY for the Web platform
                 this.app = initializeApp(environment.firebase);
-                this.auth = getAuth(this.app);
                 this.firestore = getFirestore(this.app);
                 this.storage = getStorage(this.app);
 

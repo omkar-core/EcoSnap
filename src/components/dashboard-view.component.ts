@@ -22,7 +22,7 @@ import { AppComponent } from '../app.component';
               } @else {
                  <h1 (click)="startEditingName()" class="text-2xl font-bold text-white cursor-pointer hover:text-emerald-400 transition-colors">Hi, {{ game.username() }}</h1>
               }
-              <button (click)="startEditingName()" class="p-1 hover:bg-slate-700/50 rounded-lg transition-colors">
+              <button (click)="startEditingName()" aria-label="Edit name" class="p-1 hover:bg-slate-700/50 rounded-lg transition-colors">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -36,7 +36,7 @@ import { AppComponent } from '../app.component';
                <span>{{ game.currentAddress() }} @if(game.isFallbackLocation()){ <span class="text-amber-500 text-xs uppercase font-bold tracking-wider ml-1">(Default)</span> }</span>
             </div>
           </div>
-          <button (click)="game.showToast('No new notifications at this time', 'info')" class="p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors relative">
+          <button (click)="game.showToast('No new notifications at this time', 'info')" aria-label="Notifications" class="p-2 bg-slate-800 rounded-xl hover:bg-slate-700 transition-colors relative">
              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
              <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
