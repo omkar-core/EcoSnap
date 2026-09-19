@@ -3,7 +3,7 @@
 ## Storage Backend
 **Firebase Firestore** (via `@capacitor-firebase/firestore` on native, `firebase/firestore` web SDK). Rules in `firestore.rules`. Media in **Firebase Storage** (`storage.rules`).
 
-> Note: As of this snapshot, the client game state is persisted in `localStorage` (`game.service.ts` KEYS). Firestore is wired for Auth + future sync and is enforced by the rules below. Community scans (`community_scans`) exist in the rules as the intended sync path.
+> Note: As of this snapshot, the client game state is persisted in `localStorage` (`game.service.ts` KEYS). Firestore is reserved as unwired infrastructure for a future sync phase (Firebase Auth was removed, commit `81d225f`) and is enforced by the rules below. Community scans (`community_scans`) exist in the rules as the intended sync path.
 
 ## Collections / Documents
 

@@ -27,7 +27,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">ℹ️</div>
             <span class="text-slate-200 font-medium">About Us</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- App Information -->
@@ -36,7 +36,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">📱</div>
             <span class="text-slate-200 font-medium">App Information</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- Privacy Policy -->
@@ -45,7 +45,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">🔒</div>
             <span class="text-slate-200 font-medium">Privacy Policy</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- Terms & Conditions -->
@@ -54,7 +54,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">📜</div>
             <span class="text-slate-200 font-medium">Terms & Conditions</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- Contact/Support -->
@@ -63,7 +63,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">🎧</div>
             <span class="text-slate-200 font-medium">Contact & Support</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- FAQ -->
@@ -72,7 +72,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">❓</div>
             <span class="text-slate-200 font-medium">FAQ</span>
           </div>
-          <span class="text-slate-500 text-sm">›</span>
+          <span class="text-slate-400 text-sm">›</span>
         </button>
 
         <!-- Notifications Toggle (Visual Only for now based on prompt) -->
@@ -92,7 +92,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center">🦋</div>
             <div>
                <span class="text-slate-200 font-medium block">Bioluminescent Theme</span>
-               <span class="text-[10px] text-slate-500 font-mono">Immersive Cyberpunk Aesthetics</span>
+               <span class="text-[10px] text-slate-400 font-mono">Immersive Cyberpunk Aesthetics</span>
             </div>
           </div>
           <div class="w-10 h-6 rounded-full relative transition-colors" [class.bg-emerald-500]="game.isBioluminescent()" [class.bg-slate-700]="!game.isBioluminescent()">
@@ -106,7 +106,7 @@ import { GameService } from '../services/game.service';
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">🔊</div>
             <div>
                <span class="text-slate-200 font-medium block">Ambient Soundscapes</span>
-               <span class="text-[10px] text-slate-500 font-mono">City Pulse & Nature</span>
+               <span class="text-[10px] text-slate-400 font-mono">City Pulse & Nature</span>
             </div>
           </div>
           <div class="w-10 h-6 rounded-full relative transition-colors" [class.bg-emerald-500]="game.isAmbientSoundOn()" [class.bg-slate-700]="!game.isAmbientSoundOn()">
@@ -137,12 +137,12 @@ import { GameService } from '../services/game.service';
               <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center">🗑️</div>
               <span class="text-red-400 font-medium">Reset All Data</span>
             </div>
-            <span class="text-slate-500 text-sm">›</span>
+            <span class="text-slate-400 text-sm">›</span>
           </button>
         </div>
 
         <div class="mt-8 text-center pt-2">
-           <p class="text-xs text-slate-500">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
+           <p class="text-xs text-slate-400">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
         </div>
 
       </div>

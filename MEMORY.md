@@ -30,10 +30,9 @@ This file captures the operating context for AI agents and contributors working 
 - `.npmrc` sets `legacy-peer-deps=true`.
 
 ## Current Gaps / Known Notes
-- No automated tests are configured (server `test` script is a stub).
-- Game state is `localStorage`-first; on sign-in, profile + scan history are pushed to Firestore (cloud restore), but trees/zones/badges do not sync yet; leaderboard is mock.
-- Auth is wired into the Settings view (sign in / create account / Google / log out) and `AuthService` exposes a reactive `user` signal used by the app for account state.
-- `storage.service` now supports native URI uploads via `uploadUri()` (`FirebaseStorage.uploadFile({ path, fileUri, contentType })`) and native `File` objects via fetch→base64 on `uploadFile()`. No interim temp-file write is required.
+- Client unit tests are configured (Vitest + jsdom via `@angular/build:unit-test`; run `npm test -- --watch=false`). Server `test` script is still a stub.
+- Game state is `localStorage`-first and the app is anonymous/local-only. Firebase Auth was **removed** (commit `81d225f`); `SyncService` remains as unwired infrastructure for a future sync phase. Trees/zones/badges do not sync; leaderboard is mock.
+- `storage.service` supports native URI uploads via `uploadUri()` (`FirebaseStorage.uploadFile({ path, fileUri, contentType })`) and native `File` objects via fetch→base64 on `uploadFile()`. No interim temp-file write is required.
 - `server/.env` is git-ignored; use `server/.env.example`.
 - Firebase project config in `environment.ts`/`environment.prod.ts` references a `any2pdf-c1eb3` project (legacy config; replace for production).
 - SEO meta (description, Open Graph, Twitter, theme-color, canonical, JSON-LD) added in `index.html`; `og:image`/`canonical` point at `https://ecosnap.app/` (update once the domain is finalized).

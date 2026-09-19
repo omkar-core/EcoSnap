@@ -20,6 +20,9 @@ import { AccountDeletionViewComponent } from './components/account-deletion-view
 import { InfoViewComponent } from './components/info-view.component';
 import { SkeletonLoaderComponent } from './components/skeleton-loader.component';
 import { EcoCompanionComponent } from './components/eco-companion.component';
+import { CookieConsentComponent } from './components/cookie-consent.component';
+import { FocusTrapDirective } from './directives/focus-trap.directive';
+import { GlobalErrorHandler } from './services/global-error-handler.service';
 
 type ViewState = 'dashboard' | 'camera' | 'team' | 'landing' | 'community' | 'splash' | 'settings' | 'privacy' | 'terms' | 'contact' | 'about' | 'faq' | 'account_deletion' | 'info';
 
@@ -51,7 +54,9 @@ interface ChatMessage {
     AccountDeletionViewComponent,
     InfoViewComponent,
     SkeletonLoaderComponent,
-    EcoCompanionComponent
+    EcoCompanionComponent,
+    FocusTrapDirective,
+    CookieConsentComponent
   ],
   templateUrl: './app.component.html',
   styles: [`
@@ -77,6 +82,7 @@ interface ChatMessage {
 export class AppComponent {
   private geminiService = inject(GeminiService);
   private firebaseManager = inject(FirebaseManagerService);
+  private errorHandler = inject(GlobalErrorHandler);
   game = inject(GameService);
 
   currentView = signal<ViewState>('splash');
@@ -104,6 +110,24 @@ export class AppComponent {
   private typeWriterTimeout: any;
 
   constructor() {
+    // Surface unhandled application errors as a user-facing toast.
+    effect(() => {
+      const message = this.errorHandler.lastErrorMessage();
+      if (message) {
+        this.game.showToast(`SYSTEM ERROR: ${message}`, 'error');
+        this.errorHandler.clear();
+      }
+    });
+
+    // Support deep links such as /#privacy by syncing the hash to the view.
+    if (typeof window !== 'undefined') {
+      window.addEventListener('hashchange', this.onHashChange);
+      const initialView = this.viewFromHash();
+      if (initialView) {
+        this.currentView.set(initialView);
+      }
+    }
+
     // Initial Greeting from AI
     if (this.game.hasOnboarded()) {
       setTimeout(() => {
@@ -266,8 +290,27 @@ export class AppComponent {
     this.currentHistoryId.set(null);
   }
 
+  private readonly onHashChange = () => {
+    const view = this.viewFromHash();
+    if (view && view !== this.currentView()) {
+      this.currentView.set(view);
+    }
+  };
+
+  private viewFromHash(): ViewState | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    const hash = window.location.hash.replace(/^#\/?/, '');
+    const validViews: string[] = ['dashboard', 'camera', 'team', 'landing', 'community', 'splash', 'settings', 'privacy', 'terms', 'contact', 'about', 'faq', 'account_deletion', 'info'];
+    return validViews.includes(hash) ? (hash as ViewState) : null;
+  }
+
   navTo(view: ViewState) {
     this.currentView.set(view);
+    if (typeof window !== 'undefined' && window.location.hash.replace(/^#\/?/, '') !== view) {
+      window.location.hash = view;
+    }
   }
 
   handleSplashFinish() {

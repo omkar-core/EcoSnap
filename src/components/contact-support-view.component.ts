@@ -40,7 +40,7 @@ import { CommonModule } from '@angular/common';
       </div>
       
       <div class="mt-8 text-center pt-6">
-         <p class="text-xs text-slate-500">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
+         <p class="text-xs text-slate-400">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
       </div>
     </div>
   `,

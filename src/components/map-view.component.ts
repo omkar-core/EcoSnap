@@ -1,11 +1,12 @@
 import { Component, inject, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../services/game.service';
+import { FocusTrapDirective } from '../directives/focus-trap.directive';
 
 @Component({
     selector: 'app-community-view',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FocusTrapDirective],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <div class="h-full w-full bg-slate-950 overflow-y-auto pb-24 font-inter relative">
@@ -91,14 +92,14 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                               <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-xl">🌲</div>
                               <div>
                                   <div class="text-white font-bold">{{ game.trees().length }}</div>
-                                  <div class="text-[10px] text-slate-500 uppercase font-bold">Trees</div>
+                                  <div class="text-[10px] text-slate-400 uppercase font-bold">Trees</div>
                               </div>
                           </div>
                           <div class="bg-slate-950/50 rounded-xl p-3 border border-slate-800/50 flex items-center gap-3">
                               <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-xl">⚡</div>
                               <div>
                                   <div class="text-white font-bold">{{ game.greenCredits() }}</div>
-                                  <div class="text-[10px] text-slate-500 uppercase font-bold">Credits</div>
+                                  <div class="text-[10px] text-slate-400 uppercase font-bold">Credits</div>
                               </div>
                           </div>
                       </div>
@@ -131,10 +132,10 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                               <div class="mt-3 text-center">
                                  <div class="text-[10px] font-bold uppercase tracking-wider h-8" 
                                       [class.text-emerald-400]="game.neighborhoodHealth() >= milestone.reqHealth"
-                                      [class.text-slate-500]="game.neighborhoodHealth() < milestone.reqHealth">
+                                      [class.text-slate-400]="game.neighborhoodHealth() < milestone.reqHealth">
                                     {{ milestone.label }}
                                  </div>
-                                 <div class="text-[9px] font-mono text-slate-600 mt-1">LVL {{ milestone.reqHealth }}</div>
+                                 <div class="text-[9px] font-mono text-slate-400 mt-1">LVL {{ milestone.reqHealth }}</div>
                               </div>
                            </div>
                         }
@@ -145,7 +146,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                   <div>
                       <h2 class="text-white font-bold text-lg mb-4 flex items-center gap-2">
                           Active Zones
-                          <span class="text-xs font-normal text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full">{{ game.zones().length }} Detected</span>
+                          <span class="text-xs font-normal text-slate-400 bg-slate-900 px-2 py-0.5 rounded-full">{{ game.zones().length }} Detected</span>
                       </h2>
                       <div class="space-y-3">
                           @for (zone of game.zones(); track zone.id) {
@@ -176,11 +177,11 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                       <div class="flex items-center justify-between mb-1">
                                           <h3 class="text-white font-bold text-sm truncate pr-2">{{ zone.name }}</h3>
                                           <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0"
-                                                [class.bg-emerald-500_20]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                                                [class.bg-emerald-500/20]="zone.status === 'Pristine' || zone.status === 'Clean'"
                                                 [class.text-emerald-300]="zone.status === 'Pristine' || zone.status === 'Clean'"
-                                                [class.bg-amber-500_20]="zone.status === 'Moderate'"
+                                                [class.bg-amber-500/20]="zone.status === 'Moderate'"
                                                 [class.text-amber-300]="zone.status === 'Moderate'"
-                                                [class.bg-red-500_20]="zone.status === 'Dirty' || zone.status === 'Critical'"
+                                                [class.bg-red-500/20]="zone.status === 'Dirty' || zone.status === 'Critical'"
                                                 [class.text-red-300]="zone.status === 'Dirty' || zone.status === 'Critical'">
                                               {{ zone.status }}
                                           </span>
@@ -251,12 +252,12 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                     <div class="flex items-start justify-between mb-3">
                                         <div class="flex items-center gap-3">
                                             <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl border transition-colors"
-                                                 [class.bg-emerald-900_30]="tree.health > 70"
-                                                 [class.border-emerald-500_20]="tree.health > 70"
-                                                 [class.bg-amber-900_30]="tree.health <= 70 && tree.health > 40"
-                                                 [class.border-amber-500_20]="tree.health <= 70 && tree.health > 40"
-                                                 [class.bg-red-900_30]="tree.health <= 40"
-                                                 [class.border-red-500_20]="tree.health <= 40">
+[class.bg-emerald-900/30]="tree.health > 70"
+                                                   [class.border-emerald-500/20]="tree.health > 70"
+                                                   [class.bg-amber-900/30]="tree.health <= 70 && tree.health > 40"
+                                                   [class.border-amber-500/20]="tree.health <= 70 && tree.health > 40"
+                                                   [class.bg-red-900/30]="tree.health <= 40"
+                                                   [class.border-red-500/20]="tree.health <= 40">
                                                 {{ GROWTH_CONFIG[tree.stage].icon }}
                                             </div>
                                             <div>
@@ -265,7 +266,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-xs text-slate-500 uppercase font-bold mb-1">Health</div>
+                                            <div class="text-xs text-slate-400 uppercase font-bold mb-1">Health</div>
                                             <div class="w-20 h-1.5 bg-slate-800 rounded-full overflow-hidden ml-auto">
                                                 <div class="h-full transition-all duration-500" 
                                                      [style.width.%]="tree.health"
@@ -284,15 +285,15 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                     <!-- EXPANDED METRICS (Requirements Met) -->
                                     <div class="grid grid-cols-3 gap-2 text-xs text-slate-400 mb-3 bg-slate-950/30 p-2 rounded-lg text-center">
                                        <div class="flex flex-col">
-                                          <span class="text-[10px] font-bold uppercase text-slate-500">Offset</span>
+                                          <span class="text-[10px] font-bold uppercase text-slate-400">Offset</span>
                                           <span class="text-white font-bold">{{ tree.co2Offset | number:'1.2-2' }}kg</span>
                                        </div>
                                        <div class="flex flex-col">
-                                          <span class="text-[10px] font-bold uppercase text-slate-500">AC Hours</span>
+                                          <span class="text-[10px] font-bold uppercase text-slate-400">AC Hours</span>
                                           <span class="text-white font-bold">{{ tree.metrics?.acHours || 0 | number:'1.1-1' }}h</span>
                                        </div>
                                        <div class="flex flex-col">
-                                          <span class="text-[10px] font-bold uppercase text-slate-500">Bottles</span>
+                                          <span class="text-[10px] font-bold uppercase text-slate-400">Bottles</span>
                                           <span class="text-white font-bold">{{ tree.metrics?.plasticBottles || 0 | number:'1.0-0' }}</span>
                                        </div>
                                     </div>
@@ -311,7 +312,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                             </button>
                                         </div>
                                     } @else {
-                                       <div class="text-center text-[10px] text-slate-500 bg-slate-800/50 py-1.5 rounded-lg border border-slate-700/50">
+                                       <div class="text-center text-[10px] text-slate-400 bg-slate-800/50 py-1.5 rounded-lg border border-slate-700/50">
                                           Auto-Maintained by {{ tree.mode === 'community' ? 'Community Partners' : 'Sponsors' }}
                                        </div>
                                     }
@@ -357,7 +358,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
 
                     <!-- Active Threats List -->
                     <div class="w-full space-y-3 mt-6">
-                       <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-2 border-l-2 border-slate-700">Hotspots Nearby</h3>
+                       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2 border-l-2 border-slate-700">Hotspots Nearby</h3>
                        
                        <div class="bg-slate-900/80 border border-red-900/50 rounded-xl p-4 flex justify-between items-center relative overflow-hidden group hover:bg-slate-800 transition-colors cursor-pointer">
                           <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-600 shadow-[0_0_10px_red]"></div>
@@ -394,7 +395,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
 
     <!-- PLANTING MODAL -->
     @if (isPlantingOpen() && targetZone()) {
-        <div role="dialog" aria-modal="true" aria-label="Reforestation protocol" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Reforestation protocol" appFocusTrap class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
             <div class="bg-slate-900 w-full sm:w-[450px] rounded-t-3xl sm:rounded-3xl border border-slate-700 shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[90vh]">
                 
                 <!-- Modal Header -->
@@ -412,7 +413,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                     
                     <!-- 1. MODE SELECTOR -->
                     <div>
-                       <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">1. Select Mode</label>
+                       <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 block">1. Select Mode</label>
                        <div class="flex gap-2 p-1 bg-slate-800 rounded-xl border border-slate-700">
                           <button (click)="selectedMode.set('self')" 
                              class="flex-1 py-2 rounded-lg text-xs font-bold uppercase transition-all"
@@ -449,12 +450,12 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                            </div>
                            
                            <div>
-                              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Species</label>
+                              <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Species</label>
                               <div class="grid grid-cols-2 gap-2">
                                   @for (species of speciesOptions; track species) {
                                       <button (click)="selectedSpecies.set(species)" 
                                               class="p-2 rounded-lg border text-left transition-all text-xs font-bold"
-                                              [class.bg-emerald-600_20]="selectedSpecies() === species"
+                                              [class.bg-emerald-600/20]="selectedSpecies() === species"
                                               [class.border-emerald-500]="selectedSpecies() === species"
                                               [class.text-white]="selectedSpecies() === species"
                                               [class.bg-slate-800]="selectedSpecies() !== species"
@@ -482,7 +483,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                            </div>
 
                            <div>
-                              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Select Pack</label>
+                              <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Select Pack</label>
                               <div class="space-y-2">
                                  <button (click)="quantity.set(1)" 
                                     class="w-full flex items-center justify-between p-3 rounded-xl border bg-slate-800"
@@ -524,7 +525,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                  @if(game.streakDays() >= 30) {
                                     <span class="text-emerald-400 text-xs font-bold">UNLOCKED</span>
                                  } @else {
-                                    <span class="text-slate-600 text-xs font-bold">LOCKED ({{game.streakDays()}}/30)</span>
+                                    <span class="text-slate-400 text-xs font-bold">LOCKED ({{game.streakDays()}}/30)</span>
                                  }
                               </div>
                               <div class="flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-slate-700">
@@ -532,7 +533,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                                  @if(game.totalPoints() >= 1000) {
                                     <span class="text-emerald-400 text-xs font-bold">UNLOCKED</span>
                                  } @else {
-                                    <span class="text-slate-600 text-xs font-bold">LOCKED ({{game.totalPoints()}}/1000)</span>
+                                    <span class="text-slate-400 text-xs font-bold">LOCKED ({{game.totalPoints()}}/1000)</span>
                                  }
                               </div>
                            </div>
@@ -549,7 +550,7 @@ import { GameService, Zone, Tree, PlantationMode, GROWTH_CONFIG } from '../servi
                     
                     <button (click)="confirmPlanting()" 
                             [disabled]="!canAfford()"
-                            class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-900/40 transition-transform active:scale-95 btn-shockwave">
+                            class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:text-slate-400 text-white rounded-xl font-bold shadow-lg shadow-emerald-900/40 transition-transform active:scale-95 btn-shockwave">
                         @if (canAfford()) {
                            Confirm Plantation
                         } @else {

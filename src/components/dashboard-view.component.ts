@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewInit, OnDestroy, effect, output, signal, ChangeDetectionStrategy, WritableSignal } from '@angular/core';
+import { Component, inject, AfterViewInit, OnDestroy, effect, output, signal, computed, ChangeDetectionStrategy, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService, ScanRecord } from '../services/game.service';
 import { GeminiService } from '../services/gemini.service';
@@ -131,11 +131,11 @@ import { AppComponent } from '../app.component';
             <h3 class="text-lg font-semibold text-white">Current Status</h3>
             @if (game.currentZone(); as zone) {
                <span class="px-3 py-1 text-xs font-medium rounded-full uppercase tracking-wider"
-                  [class.bg-emerald-500_20]="zone.status === 'Pristine' || zone.status === 'Clean'"
+                  [class.bg-emerald-500/20]="zone.status === 'Pristine' || zone.status === 'Clean'"
                   [class.text-emerald-300]="zone.status === 'Pristine' || zone.status === 'Clean'"
-                  [class.bg-amber-500_20]="zone.status === 'Moderate'"
+                  [class.bg-amber-500/20]="zone.status === 'Moderate'"
                   [class.text-amber-300]="zone.status === 'Moderate'"
-                  [class.bg-red-500_20]="zone.status === 'Dirty' || zone.status === 'Critical'"
+                  [class.bg-red-500/20]="zone.status === 'Dirty' || zone.status === 'Critical'"
                   [class.text-red-300]="zone.status === 'Dirty' || zone.status === 'Critical'">
                   {{ zone.status }} ({{ zone.health }}%)
                </span>
@@ -218,13 +218,41 @@ import { AppComponent } from '../app.component';
         <!-- Recent Activity -->
         <div>
           <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-3">Recent Activity</h3>
+
+          @if (game.scanHistory().length > 0) {
+          <div class="flex flex-col sm:flex-row gap-2 mb-3">
+            <input type="search" placeholder="Search activity..." [value]="historySearch()"
+              (input)="historySearch.set($any($event.target).value)"
+              aria-label="Search scan activity"
+              class="flex-1 bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60" />
+            <select [value]="historyFilter()" (change)="historyFilter.set($any($event.target).value)"
+              aria-label="Filter activity by type"
+              class="bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/60">
+              <option value="all">All</option>
+              <option value="cleanup">Cleanup</option>
+              <option value="scout">Scout</option>
+            </select>
+            <select [value]="historySort()" (change)="historySort.set($any($event.target).value)"
+              aria-label="Sort activity"
+              class="bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/60">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="points">Top XP</option>
+            </select>
+          </div>
+          }
+
           <div class="space-y-3">
              @if (game.scanHistory().length === 0) {
                 <div class="text-center py-6 border border-dashed border-slate-700 rounded-xl bg-slate-900/30">
-                   <p class="text-slate-500 text-xs">No activity yet. Start your journey!</p>
+                   <p class="text-slate-400 text-xs">No activity yet. Start your journey!</p>
+                </div>
+             } @else if (filteredHistory().length === 0) {
+                <div class="text-center py-6 border border-dashed border-slate-700 rounded-xl bg-slate-900/30">
+                   <p class="text-slate-400 text-xs">No activity matches your filters.</p>
                 </div>
              } @else {
-                @for (scan of game.scanHistory().slice(0, 5); track scan.id) {
+                @for (scan of visibleHistory(); track scan.id) {
                    <div (click)="viewScan.emit(scan)" class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800 transition-colors">
                       <div class="flex items-center gap-3">
                          <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br"
@@ -243,8 +271,14 @@ import { AppComponent } from '../app.component';
                             <div class="text-slate-400 text-xs">{{ scan.timestamp | date:'shortTime' }} • +{{ scan.points }} XP</div>
                          </div>
                       </div>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                    </div>
+                }
+                @if (hasMoreHistory()) {
+                   <button (click)="loadMoreHistory()"
+                     class="w-full py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold uppercase tracking-wider hover:bg-slate-800 transition-colors">
+                     Load more
+                   </button>
                 }
              }
           </div>
@@ -265,6 +299,47 @@ export class DashboardViewComponent implements AfterViewInit, OnDestroy {
 
    isEditingName = signal(false);
    displayedStatus = signal('');
+
+   readonly historySearch = signal('');
+   readonly historyFilter = signal<'all' | 'cleanup' | 'scout'>('all');
+   readonly historySort = signal<'newest' | 'oldest' | 'points'>('newest');
+   readonly historyLimit = signal(5);
+
+   readonly filteredHistory = computed<ScanRecord[]>(() => {
+      const query = this.historySearch().trim().toLowerCase();
+      const filter = this.historyFilter();
+      const sort = this.historySort();
+
+      let items = this.game.scanHistory();
+
+      if (filter !== 'all') {
+         items = items.filter(scan => scan.claimType === filter);
+      }
+      if (query) {
+         items = items.filter(scan =>
+            (scan.wasteType ?? '').toLowerCase().includes(query) ||
+            (scan.recyclingGuidance?.category ?? '').toLowerCase().includes(query)
+         );
+      }
+
+      const sorted = [...items];
+      if (sort === 'oldest') {
+         sorted.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      } else if (sort === 'points') {
+         sorted.sort((a, b) => b.points - a.points);
+      } else {
+         sorted.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      }
+      return sorted;
+   });
+
+   readonly visibleHistory = computed(() => this.filteredHistory().slice(0, this.historyLimit()));
+
+   readonly hasMoreHistory = computed(() => this.filteredHistory().length > this.historyLimit());
+
+   loadMoreHistory(): void {
+      this.historyLimit.update(limit => limit + 5);
+   }
 
    private timeouts: any[] = [];
 

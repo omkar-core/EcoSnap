@@ -55,7 +55,7 @@ import { GameService } from '../services/game.service';
             [class.hover.bg-red-500]="confirmed() && !isResetting()"
             [class.text-white]="confirmed() && !isResetting()"
             [class.bg-slate-800]="!confirmed() || isResetting()"
-            [class.text-slate-500]="!confirmed() || isResetting()"
+            [class.text-slate-400]="!confirmed() || isResetting()"
          >
             <span *ngIf="isResetting()" class="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
             {{ isResetting() ? 'Resetting...' : 'Permanently Reset All Data' }}

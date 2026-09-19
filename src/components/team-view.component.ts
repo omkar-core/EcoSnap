@@ -45,7 +45,7 @@ import { GameService } from '../services/game.service';
              <div class="flex-1 min-w-0">
                 <div class="text-white font-bold text-xl truncate">{{ game.username() }}</div>
                 <div class="text-emerald-400 text-sm font-medium mb-1">{{ game.userRank() }}</div>
-                <div class="text-slate-500 text-xs">Device ID: {{ game.deviceId().substring(0, 8) }}...</div>
+                <div class="text-slate-400 text-xs">Device ID: {{ game.deviceId().substring(0, 8) }}...</div>
              </div>
          </div>
 
@@ -60,8 +60,8 @@ import { GameService } from '../services/game.service';
                     [style.width.%]="game.nextRankProgress()"></div>
             </div>
             <div class="flex justify-between mt-2 text-xs">
-               <span class="text-slate-500">{{ game.totalPoints() | number }} XP</span>
-               <span class="text-slate-500">Next Level</span>
+               <span class="text-slate-400">{{ game.totalPoints() | number }} XP</span>
+               <span class="text-slate-400">Next Level</span>
             </div>
          </div>
       </div>
@@ -72,19 +72,19 @@ import { GameService } from '../services/game.service';
          <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
             <div class="text-2xl mb-1">📸</div>
             <div class="text-white font-bold text-lg">{{ game.scanHistory().length }}</div>
-            <div class="text-[10px] text-slate-500 uppercase font-bold">Scans</div>
+            <div class="text-[10px] text-slate-400 uppercase font-bold">Scans</div>
          </div>
          <!-- Impact -->
          <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
             <div class="text-2xl mb-1">⚖️</div>
             <div class="text-white font-bold text-lg">{{ (game.totalWasteWeight() / 1000) | number:'1.1-1' }}</div>
-            <div class="text-[10px] text-slate-500 uppercase font-bold">Kg Waste</div>
+            <div class="text-[10px] text-slate-400 uppercase font-bold">Kg Waste</div>
          </div>
          <!-- Trees -->
          <div class="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-3 text-center">
             <div class="text-2xl mb-1">🌳</div>
             <div class="text-white font-bold text-lg">{{ game.trees().length }}</div>
-            <div class="text-[10px] text-slate-500 uppercase font-bold">Planted</div>
+            <div class="text-[10px] text-slate-400 uppercase font-bold">Planted</div>
          </div>
       </div>
 
@@ -118,7 +118,7 @@ import { GameService } from '../services/game.service';
                   <div class="bg-amber-500 h-full w-[20%]" title="Glass/Metal: 20%"></div>
                   <div class="bg-red-500 h-full w-[10%]" title="Hazmat: 10%"></div>
                </div>
-               <div class="flex justify-between mt-2 text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+               <div class="flex justify-between mt-2 text-[9px] font-mono text-slate-400 uppercase tracking-widest">
                   <span class="flex items-center gap-1"><span class="w-2 h-2 bg-blue-500 rounded-full"></span>Plastic</span>
                   <span class="flex items-center gap-1"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span>Bio</span>
                   <span class="flex items-center gap-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span>Glass</span>
@@ -167,7 +167,7 @@ import { GameService } from '../services/game.service';
                   <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 bg-slate-900 border border-slate-700 text-white text-xs p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-2xl">
                      <div class="font-bold uppercase tracking-wider mb-1" [class.text-emerald-400]="!!badge.unlockedAt">{{ badge.name }}</div>
                      <div class="text-slate-400 mb-2 leading-tight">{{ badge.description }}</div>
-                     <div class="text-[9px] font-mono text-slate-500">TIER: <span class="uppercase font-bold" [class.text-yellow-400]="badge.tier==='Gold'" [class.text-slate-300]="badge.tier==='Silver'" [class.text-amber-600]="badge.tier==='Bronze'">{{ badge.tier }}</span></div>
+                     <div class="text-[9px] font-mono text-slate-400">TIER: <span class="uppercase font-bold" [class.text-yellow-400]="badge.tier==='Gold'" [class.text-slate-300]="badge.tier==='Silver'" [class.text-amber-600]="badge.tier==='Bronze'">{{ badge.tier }}</span></div>
                   </div>
                </div>
             }
@@ -182,8 +182,8 @@ import { GameService } from '../services/game.service';
          <div class="space-y-3">
             @for (member of leaderboard(); track member.name; let idx = $index) {
                <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 relative overflow-hidden"
-                    [class.border-emerald-500_50]="member.isUser"
-                    [class.bg-emerald-900_10]="member.isUser">
+                    [class.border-emerald-500/50]="member.isUser"
+                    [class.bg-emerald-900/10]="member.isUser">
                   
                   @if(member.isUser) {
                      <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
@@ -210,7 +210,7 @@ import { GameService } from '../services/game.service';
                   </div>
                   <div class="text-right">
                      <div class="text-sm font-bold text-white">{{ member.points | number }}</div>
-                     <div class="text-[9px] text-slate-500 uppercase">XP</div>
+                     <div class="text-[9px] text-slate-400 uppercase">XP</div>
                   </div>
                </div>
             }
@@ -239,11 +239,11 @@ import { GameService } from '../services/game.service';
 
             <div class="grid grid-cols-2 gap-3 mb-4">
                <div class="bg-slate-950/50 rounded-xl p-3 border border-slate-800">
-                  <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">Version</div>
+                  <div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">Version</div>
                   <div class="text-white font-mono text-sm">2.5.0 (Alpha)</div>
                </div>
                <div class="bg-slate-950/50 rounded-xl p-3 border border-slate-800">
-                  <div class="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">AI Model</div>
+                  <div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">AI Model</div>
                   <div class="text-indigo-400 font-mono text-sm font-bold">Gemini 2.5</div>
                </div>
             </div>

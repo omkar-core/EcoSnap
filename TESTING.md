@@ -1,7 +1,13 @@
 # EcoSnap — Testing
 
 ## Current Status
-**No automated tests are configured.** The server `test` script is a stub (`echo "Error: no test specified" && exit 1`). The Angular `ng test` command exists as a default script but no spec files are present in the repo.
+Client unit tests are configured with the Angular `@angular/build:unit-test` builder using the **Vitest** runner on **jsdom**.
+
+- Config: `angular.json` → `test` target; `tsconfig.spec.json`.
+- Specs: `src/components/skeleton-loader.component.spec.ts`, `src/services/game.service.spec.ts`.
+- Command: `npm test` (add `-- --watch=false` for a single CI run).
+
+The server `test` script is still a stub (`echo "Error: no test specified" && exit 1`) and no server specs exist yet.
 
 ## What to Add (recommended)
 Order by value vs. effort (YAGNI — add only what pays for itself):
@@ -9,12 +15,12 @@ Order by value vs. effort (YAGNI — add only what pays for itself):
 1. **Server unit tests (highest value)** — the Gemini prompt/schema parsing and validators are pure-ish and deterministic to test.
    - Framework: `vitest` or `jest` + `supertest` (add as devDependencies in `server/`).
    - Cases: `validator` accepts/rejects each endpoint; `gemini.server` parses clean JSON and strips fences; error mapping for `API_KEY_MISSING`.
-2. **Client service tests** — `game.service` scoring/rank/tree logic (pure functions around signals) with `jest` + `jasmine` as Angular defaults.
+2. **More client service tests** — extend `game.service` coverage (zone health, tree lifecycle, badge unlocks) and add component tests for the deferred views.
 3. **E2E (optional)** — basic smoke test that the app boots (Playwright).
 
 ## Suggested Commands (once set up)
 - Backend: `cd server && npm test`
-- Client: `npm test` (Angular)
+- Client: `npm test -- --watch=false` (Angular + Vitest)
 
 ## Manual Test Checklist (current)
 - Camera capture → analysis renders → scout & cleanup claims adjust XP/credits/history.

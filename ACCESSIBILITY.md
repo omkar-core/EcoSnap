@@ -13,17 +13,18 @@ Accessibility is now a **work-in-progress with core fixes landed**. Remaining it
 ## Landed (2026-09)
 - **Screen-reader labels:** `aria-label` added to icon-only buttons across the app (navbar toggles, AI copilot FAB/close/send, settings/back/API-key/theme/sound controls, camera close/back/switch, team settings gear, dashboard edit-name & notifications, eco-companion orb/hide, scan-result close/share, planting close).
 - **Modal semantics:** AI copilot, scan-result, and reforestation dialogs expose `role="dialog"` + `aria-modal`, and `Escape` dismisses them (scan-result + AI at app level, planting within map view).
+- **Focus management:** `FocusTrapDirective` (`src/directives/focus-trap.directive.ts`) traps `Tab`/`Shift+Tab` within the AI copilot, scan-result, and reforestation dialogs, focuses the first control on open, and restores focus to the initiating element on close.
 - **Motion:** global `@media (prefers-reduced-motion: reduce)` block zeroes animation/transition durations and disables smooth scroll.
 - **Images:** scan-result photo has a descriptive `alt` bound to the detected waste type.
+- **Color contrast:** secondary body/label text raised from `text-slate-500`/`text-slate-600` to `text-slate-400` (~7.8:1 on `slate-950`, ~7.0:1 on `slate-900`) to meet WCAG AA for normal text on the dark theme. Skeleton placeholders are `aria-hidden`.
 
 ## Gaps to address
-- **Focus management:** add an explicit focus trap (and focus restoration to the initiating element) inside modals — currently only Escape dismissal is wired.
-- **Color contrast:** verify on glow/emerald & bioluminescent themes against WCAG AA (esp. primary text on `--bg-base`).
+- **Remaining contrast:** re-verify the bioluminescent/emerald glow accents (decorative), and confirm any future light-mode surfaces independently.
 - **Touch/fine-motor:** ensure minimum target sizes for game actions.
 
 ## Checklist for release
 - [x] `aria-label`s on icon-only and interactive elements.
-- [ ] Focus trap + escape on modals (escape done; focus trap pending).
+- [x] Focus trap + escape on modals.
 - [x] `prefers-reduced-motion` media query.
-- [ ] Contrast audit on both themes.
+- [x] Contrast audit on the dark theme (secondary text raised to AA).
 - [ ] Keyboard navigation across views.

@@ -2,7 +2,7 @@
 
 ## 1. System Overview
 
-EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless, Signals)** codebase runs on the web and inside **Capacitor** for Android/iOS. It talks to a small **Express (Node/TypeScript)** backend that proxies AI requests to **Google Gemini**, and uses **Firebase** (Auth, Firestore, Storage, Analytics) for user/backend services.
+EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless, Signals)** codebase runs on the web and inside **Capacitor** for Android/iOS. It talks to a small **Express (Node/TypeScript)** backend that proxies AI requests to **Google Gemini**, and uses **Firebase** (Firestore, Storage, Analytics) for backend services.
 
 ```
 ┌──────────────────────────────┐
@@ -15,8 +15,8 @@ EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless,
        ▼              ▼
 ┌──────────────┐  ┌──────────────────────┐
 │ Express API  │  │ Firebase             │
-│  (server/)   │  │  Auth / Firestore    │
-│  gemini proxy│  │  Storage / Analytics  │
+│  (server/)   │  │  Firestore / Storage │
+│  gemini proxy│  │  Analytics            │
 └──────┬───────┘  └──────────────────────┘
        │ Google GenAI SDK
        ▼
@@ -32,8 +32,7 @@ EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless,
 - **`src/services/`** — Angular services:
   - `platform.service` — native (Capacitor) vs web detection.
   - `firebase.manager` — initializes Firebase Web SDK (web only).
-  - `auth.service` — email/Google auth with web/native branching.
-  - `firestore.service`, `storage.service`, `analytics.service` — platform-branched data services.
+  - `firestore.service`, `sync.service`, `storage.service`, `analytics.service` — platform-branched data services (Firestore/Storage are unwired infrastructure for a future sync phase).
   - `gemini.service` — REST calls to the backend with timeout + personal-key fallback.
   - `game.service` — core game state (Signals), persistence (`localStorage`), zoning, trees, badges, leaderboard (mock), simulations.
 
@@ -48,7 +47,7 @@ EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless,
 ## 4. External Services
 
 - **Google Gemini 2.5 Flash** — AI analysis & chat (via `@google/genai`).
-- **Firebase** — Auth, Firestore, Storage, Analytics. Web uses web SDK; native uses `@capacitor-firebase/*` plugins.
+- **Firebase** — Firestore, Storage, Analytics. Web uses web SDK; native uses `@capacitor-firebase/*` plugins. (Auth removed — app is anonymous/local-only.)
 - **OpenStreetMap Nominatim** — reverse geocoding for addresses (client-side fetch).
 - **Navigator Geolocation API / Capacitor** — GPS.
 
@@ -56,6 +55,6 @@ EcoSnap is a hybrid mobile + web application. A single **Angular (v21, zoneless,
 
 - **Signals & zoneless** — modern Angular without zone.js for performance.
 - **Dual-platform data layer** — every data service branches web vs native via `PlatformService`.
-- **Client-persisted game state** — MVP keeps game progress in `localStorage`; Firebase used for auth and future sync.
+- **Client-persisted game state** — MVP keeps game progress in `localStorage`; Firebase is reserved for future sync (Auth removed).
 - **Server-side AI proxy** — keeps Gemini API key off the client; supports optional per-user key fallback.
 - **One `index.tsx` + importmap** — supports AI Studio-style builds.

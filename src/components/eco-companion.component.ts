@@ -20,7 +20,7 @@ import { GeminiService } from '../services/gemini.service';
           <div class="flex items-center gap-2 mb-2">
              <span class="text-xs font-mono font-bold tracking-widest text-slate-400">ARIA_LINK // {{ moodLabel() }}</span>
              <span class="flex-1"></span>
-             <button (click)="hideMessage()" aria-label="Hide message" class="text-slate-500 hover:text-white transition-colors bg-white/5 rounded-full p-1 leading-none">✕</button>
+             <button (click)="hideMessage()" aria-label="Hide message" class="text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full p-1 leading-none">✕</button>
           </div>
           
           <p class="text-sm font-medium text-slate-200 leading-relaxed font-mono whitespace-pre-line relative z-10 w-full">

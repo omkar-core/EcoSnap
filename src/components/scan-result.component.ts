@@ -2,14 +2,15 @@ import { Component, input, output, signal, computed, inject, ChangeDetectionStra
 import { CommonModule } from '@angular/common';
 import { WasteAnalysis } from '../services/gemini.service';
 import { GameService, ClaimType } from '../services/game.service';
+import { FocusTrapDirective } from '../directives/focus-trap.directive';
 
 @Component({
   selector: 'app-scan-result',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FocusTrapDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div role="dialog" aria-modal="true" aria-label="Scan result" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center animate-fade-in p-0 sm:p-4">
+    <div role="dialog" aria-modal="true" aria-label="Scan result" appFocusTrap class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center animate-fade-in p-0 sm:p-4">
       <div class="bg-slate-900 w-full sm:w-[500px] max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-3xl border border-slate-700 shadow-2xl animate-slide-up overflow-hidden relative">
         
         <!-- Close Button (Always visible) -->
@@ -85,7 +86,7 @@ import { GameService, ClaimType } from '../services/game.service';
                           <h4 class="text-cyan-400 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
                              <span class="animate-pulse">🧬</span> Core Sequence
                           </h4>
-                          <span class="text-[10px] text-slate-500 tracking-widest bg-black/40 px-2 py-1 rounded">TAP TO DECODE</span>
+                          <span class="text-[10px] text-slate-400 tracking-widest bg-black/40 px-2 py-1 rounded">TAP TO DECODE</span>
                        </div>
                        
                        <div class="space-y-3 mt-4 relative z-10">

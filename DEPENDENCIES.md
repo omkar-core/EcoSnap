@@ -5,7 +5,7 @@ Runtimes:
 - `@angular/*` **^21.0.0** (core, common, compiler, platform-browser)
 - `@angular/build` ^21.0.0, `@angular/cli` ^21.0.0
 - `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios` **^8.1.0**
-- `@capacitor-firebase/analytics`, `authentication`, `firestore`, `storage` **^8.1.0**
+- `@capacitor-firebase/analytics`, `firestore`, `storage` **^8.1.0**
 - `@google/genai` ^1.35.0 (client-side import used; heavy lifting on server)
 - `firebase` ^12.10.0
 - `rxjs` ^7.8.2

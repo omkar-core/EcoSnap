@@ -62,7 +62,7 @@ interface PassiveItem {
              <!-- Instructions for Permission -->
              @if (permissionDenied()) {
                <div class="text-left bg-slate-50 dark:bg-slate-800 rounded-xl p-4 mb-6 border border-slate-200 dark:border-slate-700">
-                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">How to enable:</p>
+                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">How to enable:</p>
                  <ol class="text-sm text-slate-700 dark:text-slate-300 space-y-2 list-decimal list-inside">
                    <li>Tap the 🔒 icon in the URL bar</li>
                    <li>Select <strong>Permissions</strong> or <strong>Site Settings</strong></li>
@@ -107,7 +107,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'active'"
                      [class.text-black]="mode() === 'active'"
                      [class.text-white]="mode() !== 'active'"
-                     [class.hover:bg-white_10]="mode() !== 'active'">
+                     [class.hover:bg-white/10]="mode() !== 'active'">
                 Active
              </button>
              <button (click)="setMode('passive')" 
@@ -115,7 +115,7 @@ interface PassiveItem {
                      [class.bg-white]="mode() === 'passive'"
                      [class.text-black]="mode() === 'passive'"
                      [class.text-white]="mode() !== 'passive'"
-                     [class.hover:bg-white_10]="mode() !== 'passive'">
+                     [class.hover:bg-white/10]="mode() !== 'passive'">
                 Auto Scan
              </button>
           </div>
@@ -256,7 +256,7 @@ interface PassiveItem {
 
                 <div class="flex-1 overflow-y-auto space-y-3 mb-6">
                    @if (passiveItems().length === 0) {
-                      <div class="text-center text-slate-500 mt-10 p-6 border border-slate-800 border-dashed rounded-xl">
+                      <div class="text-center text-slate-400 mt-10 p-6 border border-slate-800 border-dashed rounded-xl">
                          No waste detected this time.
                       </div>
                    } @else {

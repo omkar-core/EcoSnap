@@ -22,23 +22,23 @@ import { CommonModule } from '@angular/common';
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
          <ul class="space-y-4 text-sm text-slate-300">
             <li class="flex flex-col gap-1">
-               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">App Name</span>
+               <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">App Name</span>
                <span class="text-white font-medium">EcoSnap</span>
             </li>
             <li class="flex flex-col gap-1">
-               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Developer</span>
+               <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Developer</span>
                <span class="text-emerald-400 font-medium">Omkar Kore (Solo Developer)</span>
             </li>
             <li class="flex flex-col gap-1">
-               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Development Type</span>
+               <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Development Type</span>
                <span class="text-white font-medium">Independent / Self-Developed</span>
             </li>
             <li class="flex flex-col gap-1">
-               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Core Technologies</span>
+               <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Core Technologies</span>
                <span class="text-white font-medium">AI, Data Analysis, Smart Monitoring Systems</span>
             </li>
             <li class="flex flex-col gap-1">
-               <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">Purpose</span>
+               <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Purpose</span>
                <span class="text-white font-medium">Environmental awareness, eco-monitoring, and intelligent insights</span>
             </li>
          </ul>
@@ -52,7 +52,7 @@ import { CommonModule } from '@angular/common';
       </div>
       
       <div class="mt-8 text-center border-t border-slate-800 pt-6">
-         <p class="text-xs text-slate-500">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
+         <p class="text-xs text-slate-400">&copy; EcoSnap | Developed & Maintained by <strong class="text-emerald-500/80">Omkar Kore</strong></p>
       </div>
     </div>
   `,
